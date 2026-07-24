@@ -1,10 +1,9 @@
 generator client {
   provider = "prisma-client-js"
-  output   = "../src/generated/prisma"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 model Lead {
@@ -42,11 +41,12 @@ model Lead {
 }
 
 model Empresa {
-
   id Int @id @default(autoincrement())
 
   nome String
+
   segmento String
+
   telefoneWhatsapp String
 
   plano String @default("TRIAL")
@@ -57,21 +57,21 @@ model Empresa {
 
   trialExpiraEm DateTime?
 
-
-  pagamentos Pagamento[]
-
-
   logo String?
+
   corPrimaria String? @default("#16A34A")
 
   mensagemInicial String?
+
   promptIA String?
 
   endereco String?
-  horarioFuncionamento String?
-  instagram String?
-  site String?
 
+  horarioFuncionamento String?
+
+  instagram String?
+
+  site String?
 
   leads Lead[]
 
@@ -85,10 +85,12 @@ model Empresa {
 
   imoveis Imovel[]
 
+  pagamentos Pagamento[]
+
+  assinaturas Assinatura[]
 }
 
 model Usuario {
-
   id Int @id @default(autoincrement())
 
   nome String
@@ -97,12 +99,9 @@ model Usuario {
 
   senha String
 
-
   empresaId Int?
 
-
-  empresa Empresa?@relation(fields:[empresaId],references:[id],onDelete:Cascade)
-
+  empresa Empresa? @relation(fields: [empresaId], references: [id], onDelete: Cascade)
 }
 
 model FluxoPergunta {
@@ -112,7 +111,7 @@ model FluxoPergunta {
 
   etapa Int
 
-  campo String
+  campo String?
 
   empresaId Int
 
@@ -216,41 +215,43 @@ model Conhecimento {
 }
 
 model Pagamento {
-
   id Int @id @default(autoincrement())
-
 
   empresaId Int
 
-
   gateway String
-
 
   plano String
 
-
   valor Float
-
 
   status String @default("PENDENTE")
 
-
   referencia String?
-
 
   checkoutUrl String?
 
-
   gatewayId String?
-
 
   criadoEm DateTime @default(now())
 
-
   atualizadoEm DateTime @updatedAt
 
+  empresa Empresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+}
 
+model Assinatura {
+  id Int @id @default(autoincrement())
 
-  empresa Empresa @relation(fields:[empresaId],references:[id],onDelete:Cascade)
+  empresaId Int
 
+  plano String
+
+  status String @default("ATIVO")
+
+  inicio DateTime @default(now())
+
+  fim DateTime?
+
+  empresa Empresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)
 }

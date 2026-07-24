@@ -1,23 +1,4 @@
-import { PrismaClient } from "../generated/prisma/client";
-import { PrismaLibSql } from "@prisma/adapter-libsql";
-import bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-
-import { JWT_SECRET } from "../config/jwt";
-
-
-const adapter = new PrismaLibSql({
-
-    url:"file:./prisma/bot.sqlite"
-
-});
-
-
-const prisma = new PrismaClient({
-
-    adapter
-
-});
+import prisma from "../database";
 
 
 

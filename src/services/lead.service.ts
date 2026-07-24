@@ -1,20 +1,5 @@
-import { PrismaClient } from "../generated/prisma/client";
-import { PrismaLibSql } from "@prisma/adapter-libsql";
+import prisma from "../database";
 import type { Lead } from "../types/lead";
-
-
-const adapter = new PrismaLibSql({
-
-    url:"file:./prisma/bot.sqlite"
-
-});
-
-
-const prisma = new PrismaClient({
-
-    adapter
-
-});
 
 
 

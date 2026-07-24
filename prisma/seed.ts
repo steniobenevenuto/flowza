@@ -1,9 +1,10 @@
-import { PrismaClient } from "../src/generated/prisma/client";
-import { PrismaLibSql } from "@prisma/adapter-libsql";
+import "dotenv/config";
+import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 
-const adapter = new PrismaLibSql({
-  url: "file:./prisma/bot.sqlite",
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL!,
 });
 
 
@@ -28,69 +29,82 @@ async function main() {
 
       fluxos: {
 
-  create: [
+        create: [
 
-    {
-      pergunta:
-      "Olá! 😊 Seja bem-vindo(a)! Você deseja comprar, vender ou alugar um imóvel?",
+          {
+            pergunta:
+            "Olá! 😊 Seja bem-vindo(a)! Você deseja comprar, vender ou alugar um imóvel?",
 
-      etapa:1
-    },
+            etapa: 1,
 
-
-    {
-      pergunta:
-      "Perfeito! Em qual cidade você procura o imóvel?",
-
-      etapa:2
-    },
+            campo: "finalidade"
+          },
 
 
-    {
-      pergunta:
-      "Ótimo! Qual bairro ou região você tem preferência?",
+          {
+            pergunta:
+            "Perfeito! Em qual cidade você procura o imóvel?",
 
-      etapa:3
-    },
+            etapa: 2,
 
-
-    {
-      pergunta:
-      "Legal! Você procura casa, apartamento ou terreno?",
-
-      etapa:4
-    },
+            campo: "cidade"
+          },
 
 
-    {
-      pergunta:
-      "Qual valor você pretende investir ou qual faixa de aluguel procura?",
+          {
+            pergunta:
+            "Ótimo! Qual bairro ou região você tem preferência?",
 
-      etapa:5
-    },
+            etapa: 3,
 
-
-    {
-      pergunta:
-      "Quantos quartos você procura?",
-
-      etapa:6
-    },
+            campo: "bairro"
+          },
 
 
-    {
-      pergunta:
-      "Para quando pretende fechar negócio?",
+          {
+            pergunta:
+            "Legal! Você procura casa, apartamento ou terreno?",
 
-      etapa:7
-    },
+            etapa: 4,
+
+            campo: "tipo"
+          },
 
 
-  ]
+          {
+            pergunta:
+            "Qual valor você pretende investir ou qual faixa de aluguel procura?",
 
-}
+            etapa: 5,
 
-    },
+            campo: "valor"
+          },
+
+
+          {
+            pergunta:
+            "Quantos quartos você procura?",
+
+            etapa: 6,
+
+            campo: "quartos"
+          },
+
+
+          {
+            pergunta:
+            "Para quando pretende fechar negócio?",
+
+            etapa: 7,
+
+            campo: "prazo"
+          }
+
+        ]
+
+      }
+
+    }
 
   });
 

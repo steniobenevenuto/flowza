@@ -1,346 +1,99 @@
-import { Response } from "express";
-
-import { AuthRequest } from "../middlewares/auth.middleware";
+import {Request,Response} from "express";
 
 import {
+ criarCheckout
+} from "../services/mercadopago.service";
 
-    criarCheckout,
-
-    confirmarPagamento,
-
-    buscarMeuPlano
-
-} from "../services/pagamento.service";
-
-
-
+import {
+ buscarPlano
+} from "../services/plano.service";
 
 
 
 
 export async function checkout(
 
-    req:AuthRequest,
+req:Request,
 
-    res:Response
+res:Response
 
 ){
 
 
-    try{
+try{
 
 
-        const empresaId = req.usuario?.empresaId;
+const {
 
+plano
 
-        const {
+}=req.body;
 
-            plano
 
-        } = req.body;
 
 
+const dados =
+buscarPlano(plano);
 
 
 
-        if(!empresaId){
+if(!dados){
 
+return res.status(400).json({
 
-            return res.status(401).json({
+erro:"Plano inválido"
 
-                erro:"Empresa não encontrada"
-
-            });
-
-
-        }
-
-
-
-
-
-
-
-        if(!plano){
-
-
-            return res.status(400).json({
-
-                erro:"Plano não informado"
-
-            });
-
-
-        }
-
-
-
-
-
-
-
-        const resultado = await criarCheckout(
-
-            empresaId,
-
-            plano
-
-        );
-
-
-
-
-
-        return res.json(resultado);
-
-
-
-
-
-    }catch(error:any){
-
-
-        console.log(
-
-            "ERRO CHECKOUT:",
-
-            error
-
-        );
-
-
-
-        return res.status(500).json({
-
-            erro:error.message || "Erro ao criar checkout"
-
-        });
-
-
-    }
-
-
+});
 
 }
 
 
 
 
+const empresaId = 1; // depois vem do JWT
 
 
 
 
+const pagamento =
 
+await criarCheckout(
 
+dados.nome,
 
+dados.preco,
 
+empresaId
 
+);
 
 
 
-export async function aprovarPagamento(
 
-    req:AuthRequest,
+res.json({
 
-    res:Response
+url:
+pagamento.init_point
 
-){
+});
 
 
 
-    try{
 
+}catch(error){
 
 
-        const pagamentoId = Number(
+console.log(error);
 
-            req.params.id
 
-        );
+res.status(500).json({
 
+erro:"Erro checkout"
 
-
-        console.log(
-
-            "APROVANDO PAGAMENTO ID:",
-
-            pagamentoId
-
-        );
-
-
-
-
-
-
-
-        if(!pagamentoId){
-
-
-            return res.status(400).json({
-
-                erro:"Pagamento inválido"
-
-            });
-
-
-        }
-
-
-
-
-
-
-
-
-
-        const resultado = await confirmarPagamento(
-
-            pagamentoId
-
-        );
-
-
-
-
-
-
-
-        console.log(
-
-            "PAGAMENTO APROVADO:",
-
-            resultado
-
-        );
-
-
-
-
-
-
-        return res.json(resultado);
-
-
-
-
-
-
-    }catch(error:any){
-
-
-
-        console.log(
-
-            "ERRO APROVAR PAGAMENTO:",
-
-            error
-
-        );
-
-
-
-        return res.status(500).json({
-
-            erro:error.message || "Erro ao aprovar pagamento"
-
-        });
-
-
-
-    }
-
+});
 
 
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-export async function meuPlano(
-
-    req:AuthRequest,
-
-    res:Response
-
-){
-
-
-    try{
-
-
-        const empresaId = req.usuario?.empresaId;
-
-
-
-        if(!empresaId){
-
-
-            return res.status(401).json({
-
-                erro:"Empresa não encontrada"
-
-            });
-
-
-        }
-
-
-
-
-
-        const plano = await buscarMeuPlano(
-
-            empresaId
-
-        );
-
-
-
-
-
-        return res.json(plano);
-
-
-
-
-
-    }catch(error:any){
-
-
-
-        console.log(
-
-            "ERRO MEU PLANO:",
-
-            error
-
-        );
-
-
-
-        return res.status(500).json({
-
-            erro:error.message || "Erro ao buscar plano"
-
-        });
-
-
-
-    }
-
-
 }
-

@@ -3,7 +3,6 @@ const { Client, LocalAuth } = pkg;
 
 import qrcode from "qrcode-terminal";
 
-
 import {
     salvarLead,
     buscarLead,
@@ -12,36 +11,27 @@ import {
     salvarCampoLead
 } from "./lead.service";
 
-
 import {
     buscarProximaPergunta,
     buscarPerguntaAtual
 } from "./fluxo.service";
 
-
 import {
     buscarEmpresaPorWhatsapp
 } from "./empresa.service";
 
-
 import {
     processarMensagem
 } from "./motor.service";
-
 
 import {
     salvarMensagemCliente,
     salvarMensagemBot
 } from "./mensagem.service";
 
-
 import {
     emitirParaEmpresa
 } from "./socket.service";
-
-
-
-
 
 
 
@@ -56,14 +46,6 @@ function normalizarTelefone(message:any){
 
     }
 
-
-    if(message.from.includes("@lid")){
-
-        return message.from;
-
-    }
-
-
     return message.from;
 
 }
@@ -71,13 +53,16 @@ function normalizarTelefone(message:any){
 
 
 
-
-
+let iniciando = false;
 
 
 const client = new Client({
 
-    authStrategy:new LocalAuth(),
+    authStrategy:new LocalAuth({
+
+        clientId:"flowza"
+
+    }),
 
 
     puppeteer:{
@@ -98,17 +83,18 @@ const client = new Client({
 
             "--disable-dev-shm-usage",
 
-            "--disable-gpu"
+            "--disable-gpu",
 
-        ]
+            "--disable-extensions"
+
+        ],
+
+
+        timeout:60000
 
     }
 
 });
-
-
-
-
 
 
 
@@ -123,9 +109,7 @@ client.on("qr",(qr)=>{
 
 
     qrcode.generate(qr,{
-
         small:true
-
     });
 
 
@@ -135,21 +119,13 @@ client.on("qr",(qr)=>{
 
 
 
-
-
-
-
 client.on("authenticated",()=>{
-
 
     console.log(
         "WhatsApp autenticado ✅"
     );
 
-
 });
-
-
 
 
 
@@ -176,6 +152,35 @@ client.on("ready",()=>{
 
 
 
+client.on("auth_failure",(msg)=>{
+
+    console.log(
+        "Falha autenticação:",
+        msg
+    );
+
+});
+
+
+
+
+
+client.on("disconnected",(reason)=>{
+
+
+    console.log(
+        "WhatsApp desconectado:",
+        reason
+    );
+
+
+});
+
+
+
+
+
+
 
 
 
@@ -184,595 +189,442 @@ client.on(
 async(message)=>{
 
 
-    if(message.from.includes("@g.us"))
-        return;
+try{
 
 
-    if(message.from==="status@broadcast")
-        return;
+if(message.from.includes("@g.us"))
+return;
 
 
-    if(message.from.includes("@newsletter"))
-        return;
+if(message.from==="status@broadcast")
+return;
 
 
-    if(!message.body?.trim())
-        return;
+if(message.from.includes("@newsletter"))
+return;
 
 
+if(!message.body?.trim())
+return;
 
-    try{
 
 
-        const contato =
-        await message.getContact();
 
+const contato =
+await message.getContact();
 
 
-        const telefone =
-        normalizarTelefone(message);
 
+const telefone =
+normalizarTelefone(message);
 
 
-        console.log(
-            "Mensagem recebida:",
-            message.body
-        );
 
+console.log(
+"Mensagem recebida:",
+message.body
+);
 
 
 
-        const empresa =
-        await buscarEmpresaPorWhatsapp(
 
-            client.info.wid.user
 
-        );
+const empresa =
+await buscarEmpresaPorWhatsapp(
 
+client.info.wid.user
 
+);
 
-        if(!empresa){
 
 
-            console.log(
-                "WhatsApp sem empresa cadastrada"
-            );
 
 
-            return;
+if(!empresa){
 
-        }
+console.log(
+"WhatsApp sem empresa"
+);
 
+return;
 
+}
 
 
-        await salvarLead(
 
-            {
 
-                nome:
-                contato.pushname || "Sem nome",
 
 
-                telefone,
+await salvarLead(
 
+{
 
-                ultimaMensagem:
-                message.body,
+nome:
+contato.pushname || "Sem nome",
 
+telefone,
 
-                data:
-                new Date()
+ultimaMensagem:
+message.body,
 
-            },
+data:
+new Date()
 
-            empresa.id
+},
 
-        );
+empresa.id
 
+);
 
 
 
 
-        let lead =
-        await buscarLead(
 
-            telefone,
 
-            empresa.id
+let lead =
+await buscarLead(
 
-        );
+telefone,
 
+empresa.id
 
+);
 
 
-        if(!lead)
-            return;
 
 
-        // GARANTE ETAPA INICIAL
+if(!lead)
+return;
 
-        if(!lead.etapa){
 
 
-            await atualizarEtapa(
 
-                telefone,
 
-                1,
 
-                empresa.id
+await salvarMensagemCliente(
 
-            );
+lead.id,
 
+message.body
 
-            lead.etapa = 1;
+);
 
 
-        }
 
 
 
 
 
-        // RECARREGA DO BANCO
+emitirParaEmpresa(
 
-        lead =
+empresa.id,
 
-        await buscarLead(
+"nova-mensagem",
 
-            telefone,
+{
 
-            empresa.id
+leadId:lead.id,
 
-        );
+texto:message.body,
 
+tipo:"cliente",
 
+data:new Date()
 
-        if(!lead)
-            return;
+}
 
+);
 
 
 
 
-        await salvarMensagemCliente(
 
-            lead.id,
+let etapaAtual =
+lead.etapa || 1;
 
-            message.body
 
-        );
 
 
 
+const texto =
+message.body
+.toLowerCase()
+.trim();
 
 
 
-        emitirParaEmpresa(
 
-            empresa.id,
 
-            "nova-mensagem",
+const saudacoes=[
 
-            {
+"oi",
+"olá",
+"ola",
+"bom dia",
+"boa tarde",
+"boa noite"
 
-                leadId:lead.id,
+];
 
-                texto:message.body,
 
-                tipo:"cliente",
 
-                data:new Date()
 
-            }
 
-        );
 
+if(saudacoes.includes(texto)){
 
 
+await atualizarEtapa(
 
+telefone,
 
+1,
 
+empresa.id
 
-        console.log(
+);
 
-            "FLUXO LEAD:",
 
-            lead.id,
-
-            "ETAPA:",
-
-            lead.etapa
-
-        );
-
-
-
-
-
-
-        let etapaAtual =
-
-        lead.etapa || 1;
-
-
-
-
-
-        const textoNormalizado =
-
-        message.body
-
-        .toLowerCase()
-
-        .trim();
-
-
-
-
-
-        const saudacoes = [
-
-
-            "oi",
-
-            "olá",
-
-            "ola",
-
-            "bom dia",
-
-            "boa tarde",
-
-            "boa noite"
-
-
-        ];
-
-
-
-
-
-
-        // SE FOR UMA NOVA CONVERSA, COMEÇA O FLUXO
-
-        if(
-
-            saudacoes.includes(textoNormalizado)
-
-        ){
-
-
-
-            await atualizarEtapa(
-
-                telefone,
-
-                1,
-
-                empresa.id
-
-            );
-
-
-
-            etapaAtual = 1;
-
-
-            lead.etapa = 1;
-
-
-
-            console.log(
-
-                "Fluxo reiniciado na etapa 1"
-
-            );
-
-
-        }
-
-
-
-
-
-
-        let resposta = "";
-
-
-
-
-
-        const perguntaAtual =
-
-        await buscarPerguntaAtual(
-
-            empresa.id,
-
-            etapaAtual
-
-        );
-
-
-
-
-
-
-
-
-        if(perguntaAtual){
-
-
-    console.log(
-
-        "Pergunta atual:",
-
-        perguntaAtual.pergunta
-
-    );
-
-
-
-    // PRIMEIRA MENSAGEM NÃO É RESPOSTA
-
-    if(
-
-        etapaAtual === 1 &&
-
-        saudacoes.includes(textoNormalizado)
-
-    ){
-
-
-        resposta = perguntaAtual.pergunta;
-
-
-
-    }
-
-    else{
-
-
-        if(perguntaAtual.campo){
-
-
-            await salvarCampoLead(
-
-                telefone,
-
-                perguntaAtual.campo,
-
-                message.body,
-
-                empresa.id
-
-            );
-
-
-            console.log(
-
-                "Campo salvo:",
-
-                perguntaAtual.campo
-
-            );
-
-
-        }
-
-
-
-
-
-        await registrarResposta(
-
-            telefone,
-
-            message.body,
-
-            empresa.id
-
-        );
-
-
-
-
-
-        const novaEtapa =
-
-        etapaAtual + 1;
-
-
-
-
-        await atualizarEtapa(
-
-            telefone,
-
-            novaEtapa,
-
-            empresa.id
-
-        );
-
-
-
-
-
-        console.log(
-
-            "Etapa atualizada para:",
-
-            novaEtapa
-
-        );
-
-
-
-
-
-
-
-        const proximaPergunta =
-
-        await buscarProximaPergunta(
-
-            empresa.id,
-
-            novaEtapa
-
-        );
-
-
-
-
-
-        if(proximaPergunta){
-
-
-            resposta =
-
-            proximaPergunta.pergunta;
-
-
-        }
-
-        else{
-
-
-            resposta =
-
-            await processarMensagem(
-
-                client.info.wid.user,
-
-                telefone,
-
-                message.body
-
-            );
-
-
-        }
-
-
-    }
+etapaAtual=1;
 
 
 }
 
 
-        else{
 
 
-            console.log(
 
-                "Sem pergunta no fluxo, chamando motor"
 
-            );
 
+const perguntaAtual =
+await buscarPerguntaAtual(
 
+empresa.id,
 
-            resposta =
+etapaAtual
 
-            await processarMensagem(
+);
 
-                client.info.wid.user,
 
-                telefone,
 
-                message.body
 
-            );
+let resposta="";
 
 
-        }
 
 
-        if(!resposta){
 
 
-            resposta =
+if(perguntaAtual){
 
-            "Estou verificando suas informações 😊";
 
 
-        }
+if(
 
+etapaAtual===1 &&
+saudacoes.includes(texto)
 
+){
 
 
+resposta =
+perguntaAtual.pergunta;
 
 
-        await salvarMensagemBot(
+}
 
-            lead.id,
+else{
 
-            resposta
 
-        );
 
+if(perguntaAtual.campo){
 
 
+await salvarCampoLead(
 
+telefone,
 
+perguntaAtual.campo,
 
+message.body,
 
+empresa.id
 
-        await message.reply(
+);
 
-            resposta
 
-        );
+}
 
 
 
 
 
+await registrarResposta(
 
+telefone,
 
+message.body,
 
-        emitirParaEmpresa(
+empresa.id
 
-            empresa.id,
+);
 
-            "nova-mensagem",
 
-            {
 
-                leadId:lead.id,
 
-                texto:resposta,
+const novaEtapa =
+etapaAtual+1;
 
-                tipo:"bot",
 
-                data:new Date()
 
-            }
+await atualizarEtapa(
 
-        );
+telefone,
 
+novaEtapa,
 
+empresa.id
 
+);
 
 
 
-    }
 
-    catch(erro){
 
+const proxima =
+await buscarProximaPergunta(
 
-        console.log(
+empresa.id,
 
-            "Erro WhatsApp:",
+novaEtapa
 
-            erro
+);
 
-        );
 
 
-    }
+if(proxima){
+
+resposta =
+proxima.pergunta;
+
+}
+
+else{
+
+
+resposta =
+await processarMensagem(
+
+client.info.wid.user,
+
+telefone,
+
+message.body
+
+);
+
+
+}
+
+
+}
+
+
+
+}
+
+else{
+
+
+resposta =
+await processarMensagem(
+
+client.info.wid.user,
+
+telefone,
+
+message.body
+
+);
+
+
+}
+
+
+
+
+
+
+if(!resposta){
+
+resposta =
+"Estou analisando suas informações 😊";
+
+}
+
+
+
+
+
+
+await salvarMensagemBot(
+
+lead.id,
+
+resposta
+
+);
+
+
+
+
+
+await message.reply(
+
+resposta
+
+);
+
+
+
+
+
+
+
+emitirParaEmpresa(
+
+empresa.id,
+
+"nova-mensagem",
+
+{
+
+leadId:lead.id,
+
+texto:resposta,
+
+tipo:"bot",
+
+data:new Date()
+
+}
+
+);
+
+
+
+
+
+}catch(error){
+
+
+console.log(
+"Erro WhatsApp:",
+error
+);
+
+
+}
 
 
 
@@ -789,14 +641,40 @@ async(message)=>{
 export function iniciarWhatsApp(){
 
 
-    console.log(
+if(iniciando){
 
-        "Iniciando WhatsApp..."
+console.log(
+"WhatsApp já iniciando..."
+);
 
-    );
+return;
+
+}
 
 
-    client.initialize();
+iniciando=true;
+
+
+console.log(
+"Iniciando WhatsApp..."
+);
+
+
+
+client.initialize()
+.catch(err=>{
+
+
+console.log(
+"Erro inicializando WhatsApp:",
+err
+);
+
+
+iniciando=false;
+
+
+});
 
 
 }
@@ -807,14 +685,8 @@ export function iniciarWhatsApp(){
 
 
 
-
-
-
-
 export function getWhatsAppClient(){
 
-
-    return client;
-
+return client;
 
 }

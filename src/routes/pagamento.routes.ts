@@ -1,71 +1,21 @@
-import { Router } from "express";
+import {Router} from "express";
 
 import {
-
-    checkout,
-
-    aprovarPagamento,
-
-    meuPlano
-
+checkout
 } from "../controllers/pagamento.controller";
-
-
-import {
-
-    authMiddleware
-
-} from "../middlewares/auth.middleware";
-
 
 
 const router = Router();
 
 
 
-router.use(
-
-    authMiddleware
-
-);
-
-
-
-
-
 router.post(
 
-    "/checkout",
+"/checkout",
 
-    checkout
-
-);
-
-
-
-
-
-router.post(
-
-    "/aprovar/:id",
-
-    aprovarPagamento
+checkout
 
 );
-
-
-
-
-
-router.get(
-
-    "/meu-plano",
-
-    meuPlano
-
-);
-
-
 
 
 

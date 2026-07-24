@@ -1,18 +1,14 @@
-import { PrismaClient } from "../generated/prisma/client";
-import { PrismaLibSql } from "@prisma/adapter-libsql";
+import { PrismaClient } from "@prisma/client";
+import { PrismaPg } from "@prisma/adapter-pg";
 
 
-const adapter = new PrismaLibSql({
-
-    url:"file:./prisma/bot.sqlite"
-
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL!,
 });
 
 
 const prisma = new PrismaClient({
-
-    adapter
-
+  adapter,
 });
 
 

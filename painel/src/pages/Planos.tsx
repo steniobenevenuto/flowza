@@ -82,35 +82,7 @@ async function assinar(planoId:string){
 
 
 
-        const resposta = await api.post(
-
-            "/pagamento/checkout",
-
-            {
-
-                plano: planoId
-
-            }
-
-        );
-
-
-
-        console.log(
-
-            "PAGAMENTO CRIADO:",
-
-            resposta.data
-
-        );
-
-
-
-        alert(
-
-            "Checkout criado com sucesso 🚀"
-
-        );
+        window.location.href = resposta.data.url;
 
 
 
