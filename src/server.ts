@@ -1,13 +1,66 @@
+import "dotenv/config";
+
+import express from "express";
+import cors from "cors";
+
+import { createServer } from "http";
+import { Server } from "socket.io";
+
+
 // ======================
-// MIDDLEWARES
+// ROTAS
 // ======================
+
+import leadRoutes from "./routes/lead.routes";
+import empresaRoutes from "./routes/empresa.routes";
+import conversaRoutes from "./routes/conversa.routes";
+import dashboardRoutes from "./routes/dashboard.routes";
+import authRoutes from "./routes/auth.routes";
+import envioRoutes from "./routes/envio.routes";
+import configuracaoRoutes from "./routes/configuracao.routes";
+import fluxoRoutes from "./routes/fluxo.routes";
+import planoRoutes from "./routes/plano.routes";
+import pagamentoRoutes from "./routes/pagamento.routes";
+
+
+// ======================
+// SERVIÇOS
+// ======================
+
+import {
+    iniciarWhatsApp
+} from "./services/whatsapp.service";
+
+
+import {
+    iniciarSocket
+} from "./services/socket.service";
+
+
+
+// ======================
+// APP
+// ======================
+
+const app = express();
+
+
+
+
+// ======================
+// CORS
+// ======================
+
+const FRONTEND_URL =
+    "https://adequate-endurance-production-ac72.up.railway.app";
+
 
 app.use(
     cors({
 
         origin:[
             "http://localhost:5173",
-            "https://adequate-endurance-production-ac72.up.railway.app"
+            FRONTEND_URL
         ],
 
         methods:[
@@ -29,20 +82,107 @@ app.use(
 );
 
 
-app.use(express.json());
-
-
-
-app.options(
-    "/*splat",
-    cors()
+app.use(
+    express.json()
 );
 
 
 
 
 // ======================
-// SOCKET SERVER
+// TESTE
+// ======================
+
+app.get(
+    "/",
+    (req,res)=>{
+
+        res.json({
+
+            status:"online",
+
+            mensagem:
+            "Flowza SaaS funcionando 🚀"
+
+        });
+
+    }
+);
+
+
+
+
+
+// ======================
+// ROTAS API
+// ======================
+
+
+app.use(
+    "/auth",
+    authRoutes
+);
+
+
+app.use(
+    "/dashboard",
+    dashboardRoutes
+);
+
+
+app.use(
+    "/leads",
+    leadRoutes
+);
+
+
+app.use(
+    "/conversas",
+    conversaRoutes
+);
+
+
+app.use(
+    "/enviar",
+    envioRoutes
+);
+
+
+app.use(
+    "/empresa",
+    empresaRoutes
+);
+
+
+app.use(
+    "/configuracao",
+    configuracaoRoutes
+);
+
+
+app.use(
+    "/fluxo",
+    fluxoRoutes
+);
+
+
+app.use(
+    "/planos",
+    planoRoutes
+);
+
+
+app.use(
+    "/pagamento",
+    pagamentoRoutes
+);
+
+
+
+
+
+// ======================
+// SOCKET.IO
 // ======================
 
 
@@ -62,7 +202,7 @@ const io = new Server(
 
                 "http://localhost:5173",
 
-                "https://adequate-endurance-production-ac72.up.railway.app"
+                FRONTEND_URL
 
             ],
 
@@ -84,7 +224,6 @@ const io = new Server(
 
 
 iniciarSocket(io);
-
 
 
 
@@ -115,9 +254,11 @@ io.on(
                 );
 
 
+
                 socket.join(
                     `empresa_${empresaId}`
                 );
+
 
 
                 console.log(
@@ -129,7 +270,6 @@ io.on(
             }
 
         );
-
 
 
 
@@ -149,6 +289,74 @@ io.on(
             }
 
         );
+
+
+    }
+
+);
+
+
+
+
+
+// ======================
+// START
+// ======================
+
+
+const PORT =
+    process.env.PORT || 3000;
+
+
+
+httpServer.listen(
+
+    PORT,
+
+    ()=>{
+
+
+        console.log(
+            `Flowza rodando na porta ${PORT} 🚀`
+        );
+
+
+
+        if(
+            process.env.INICIAR_WHATSAPP === "true"
+        ){
+
+            try{
+
+                iniciarWhatsApp();
+
+
+                console.log(
+                    "WhatsApp iniciado com sucesso."
+                );
+
+
+            }catch(error){
+
+
+                console.error(
+                    "Erro ao iniciar WhatsApp:",
+                    error
+                );
+
+
+            }
+
+
+        }else{
+
+
+            console.log(
+                "WhatsApp desabilitado nesta instância."
+            );
+
+
+        }
 
 
     }
