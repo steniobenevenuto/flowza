@@ -1,12 +1,12 @@
 import { Server } from "socket.io";
 
 
-let io:Server | null = null;
+let io: Server | null = null;
 
 
 
 export function iniciarSocket(
-    server:Server
+    server: Server
 ){
 
     io = server;
@@ -53,6 +53,5 @@ export function emitirParaEmpresa(
         dados
 
     );
-
 
 }
