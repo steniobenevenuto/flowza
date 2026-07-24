@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
-import { io } from "socket.io-client";
+import socket from "../services/socket";
 
 import Layout from "../components/Layout";
 import api from "../services/api";
@@ -42,8 +42,7 @@ interface ConversaResponse{
 
 
 
-const socket = io(
-    "http://localhost:3000",
+const socket = io("https://flowza-production-9b03.up.railway.app");
     {
 
         auth:{

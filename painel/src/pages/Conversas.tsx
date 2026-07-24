@@ -4,9 +4,7 @@ import {
     useState
 } from "react";
 
-import {
-    io
-} from "socket.io-client";
+import socket from "../services/socket";
 
 import Layout from "../components/Layout";
 import api from "../services/api";
@@ -60,15 +58,7 @@ interface ConversaResponse {
 
 
 
-const socket = io(
-    "http://localhost:3000",
-    {
-        auth:{
-            token:
-            localStorage.getItem("token")
-        }
-    }
-);
+
 
 
 
