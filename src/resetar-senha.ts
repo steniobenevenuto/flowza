@@ -1,16 +1,8 @@
-import { PrismaClient } from "./generated/prisma/client";
-import { PrismaLibSql } from "@prisma/adapter-libsql";
+import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 
 
-const adapter = new PrismaLibSql({
-  url:"file:./prisma/bot.sqlite"
-});
-
-
-const prisma = new PrismaClient({
-  adapter
-});
+const prisma = new PrismaClient();
 
 
 async function main(){
@@ -19,8 +11,7 @@ async function main(){
 const novaSenha = "123456";
 
 
-const senhaHash =
-await bcrypt.hash(
+const senhaHash = await bcrypt.hash(
   novaSenha,
   10
 );
@@ -29,23 +20,24 @@ await bcrypt.hash(
 
 await prisma.usuario.update({
 
-where:{
-id:1
-},
+  where:{
+    id:1
+  },
 
 
-data:{
-senha:senhaHash
-}
+  data:{
+    senha:senhaHash
+  }
 
 });
 
 
-
 console.log(
-"Senha alterada para 123456"
+  "Senha alterada para 123456"
 );
 
+
+await prisma.$disconnect();
 
 }
 
