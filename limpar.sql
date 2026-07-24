@@ -1,0 +1,3 @@
+DELETE FROM Mensagem;
+DELETE FROM Resposta;
+DELETE FROM Lead;

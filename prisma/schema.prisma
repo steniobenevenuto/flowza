@@ -1,0 +1,256 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Lead {
+  id Int @id @default(autoincrement())
+
+  nome String?
+
+  telefone String
+
+  mensagem String
+
+  data DateTime @default(now())
+
+  etapa Int @default(1)
+
+  status String @default("novo")
+
+  segmento String?
+
+  cidade String?
+
+  bairro String?
+
+  empresaId Int?
+
+  empresa Empresa? @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+
+  respostas Resposta[]
+
+  campos LeadCampo[]
+
+  mensagens Mensagem[]
+
+  @@unique([telefone, empresaId])
+}
+
+model Empresa {
+
+  id Int @id @default(autoincrement())
+
+  nome String
+  segmento String
+  telefoneWhatsapp String
+
+  plano String @default("TRIAL")
+
+  ativo Boolean @default(true)
+
+  trial Boolean @default(true)
+
+  trialExpiraEm DateTime?
+
+
+  pagamentos Pagamento[]
+
+
+  logo String?
+  corPrimaria String? @default("#16A34A")
+
+  mensagemInicial String?
+  promptIA String?
+
+  endereco String?
+  horarioFuncionamento String?
+  instagram String?
+  site String?
+
+
+  leads Lead[]
+
+  fluxos FluxoPergunta[]
+
+  campos CampoFormulario[]
+
+  conhecimentos Conhecimento[]
+
+  usuarios Usuario[]
+
+  imoveis Imovel[]
+
+}
+
+model Usuario {
+
+  id Int @id @default(autoincrement())
+
+  nome String
+
+  email String @unique
+
+  senha String
+
+
+  empresaId Int?
+
+
+  empresa Empresa?@relation(fields:[empresaId],references:[id],onDelete:Cascade)
+
+}
+
+model FluxoPergunta {
+  id Int @id @default(autoincrement())
+
+  pergunta String
+
+  etapa Int
+
+  campo String
+
+  empresaId Int
+
+  empresa Empresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+}
+
+model Resposta {
+  id Int @id @default(autoincrement())
+
+  pergunta String
+
+  resposta String
+
+  data DateTime @default(now())
+
+  leadId Int
+
+  lead Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+}
+
+model Mensagem {
+  id Int @id @default(autoincrement())
+
+  texto String
+
+  tipo String
+
+  data DateTime @default(now())
+
+  leadId Int
+
+  lead Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+}
+
+model Imovel {
+  id Int @id @default(autoincrement())
+
+  titulo String
+
+  tipo String
+
+  finalidade String
+
+  cidade String
+
+  bairro String
+
+  preco Float
+
+  quartos Int?
+
+  banheiros Int?
+
+  vagas Int?
+
+  descricao String?
+
+  fotos String?
+
+  empresaId Int
+
+  empresa Empresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+}
+
+model LeadCampo {
+  id Int @id @default(autoincrement())
+
+  leadId Int
+
+  campo String
+
+  valor String
+
+  lead Lead @relation(fields: [leadId], references: [id], onDelete: Cascade)
+}
+
+model CampoFormulario {
+  id Int @id @default(autoincrement())
+
+  nome String
+
+  pergunta String
+
+  ordem Int
+
+  empresaId Int
+
+  empresa Empresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+}
+
+model Conhecimento {
+  id Int @id @default(autoincrement())
+
+  pergunta String
+
+  resposta String
+
+  empresaId Int
+
+  empresa Empresa @relation(fields: [empresaId], references: [id], onDelete: Cascade)
+}
+
+model Pagamento {
+
+  id Int @id @default(autoincrement())
+
+
+  empresaId Int
+
+
+  gateway String
+
+
+  plano String
+
+
+  valor Float
+
+
+  status String @default("PENDENTE")
+
+
+  referencia String?
+
+
+  checkoutUrl String?
+
+
+  gatewayId String?
+
+
+  criadoEm DateTime @default(now())
+
+
+  atualizadoEm DateTime @updatedAt
+
+
+
+  empresa Empresa @relation(fields:[empresaId],references:[id],onDelete:Cascade)
+
+}
