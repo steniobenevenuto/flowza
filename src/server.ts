@@ -406,64 +406,20 @@ io.on(
 // START FLOWZA
 // ======================
 
+const PORT = process.env.PORT || 3000;
 
-const PORT =
+httpServer.listen(PORT, () => {
+    console.log(`Flowza rodando na porta ${PORT} 🚀`);
 
-process.env.PORT || 3000;
-
-
-
-
-
-httpServer.listen(
-
-    PORT,
-
-    ()=>{
-
-
-        console.log(
-
-            `Flowza rodando na porta ${PORT} 🚀`
-
-        );
-
-
-
-
-        try{
-
-
+    if (process.env.INICIAR_WHATSAPP === "true") {
+        try {
             iniciarWhatsApp();
 
-
-
-            console.log(
-
-                "WhatsApp iniciado com sucesso."
-
-            );
-
-
+            console.log("WhatsApp iniciado com sucesso.");
+        } catch (error) {
+            console.error("Erro ao iniciar WhatsApp:", error);
         }
-
-
-        catch(error){
-
-
-            console.error(
-
-                "Erro ao iniciar WhatsApp:",
-
-                error
-
-            );
-
-
-        }
-
-
-
+    } else {
+        console.log("WhatsApp desabilitado nesta instância.");
     }
-
-);
+});
