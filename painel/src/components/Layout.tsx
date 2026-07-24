@@ -1,5 +1,8 @@
 import type { ReactNode } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+
+import socket from "../services/socket";
 
 
 interface Props{
@@ -14,13 +17,88 @@ export default function Layout({children}:Props){
 
 
 
+    useEffect(()=>{
+
+
+        const token =
+        localStorage.getItem("token");
+
+
+        const empresaId =
+        localStorage.getItem("empresaId");
+
+
+
+        if(token){
+
+
+            socket.auth = {
+                token
+            };
+
+
+            if(!socket.connected){
+
+                socket.connect();
+
+            }
+
+
+
+            if(empresaId){
+
+
+                socket.emit(
+                    "entrar_empresa",
+                    Number(empresaId)
+                );
+
+
+                console.log(
+                    "Socket conectado empresa:",
+                    empresaId
+                );
+
+
+            }
+
+
+        }
+
+
+
+        return()=>{
+
+
+            socket.disconnect();
+
+
+        };
+
+
+    },[]);
+
+
+
+
+
+
+
     function sair(){
+
+
+        socket.disconnect();
+
 
         localStorage.clear();
 
+
         navigate("/");
 
+
     }
+
+
 
 
 
@@ -28,6 +106,8 @@ export default function Layout({children}:Props){
         localStorage.getItem("empresaNome")
         ||
         "Minha Empresa";
+
+
 
 
 
@@ -42,9 +122,6 @@ export default function Layout({children}:Props){
         ">
 
 
-            {/* SIDEBAR */}
-
-
             <aside className="
             w-60
             bg-zinc-950
@@ -54,10 +131,6 @@ export default function Layout({children}:Props){
             flex-col
             ">
 
-
-
-
-                {/* LOGO */}
 
 
                 <div className="
@@ -77,7 +150,7 @@ export default function Layout({children}:Props){
                         <span className="text-blue-500">
                             F
                         </span>
-                        
+
                         lowza
 
 
@@ -114,11 +187,7 @@ export default function Layout({children}:Props){
                         h-2
                         rounded-full
                         bg-blue-500
-                        ">
-
-
-                        </span>
-
+                        " />
 
                         Sistema online
 
@@ -130,12 +199,6 @@ export default function Layout({children}:Props){
 
 
 
-
-
-
-
-
-                {/* EMPRESA */}
 
 
                 <div className="p-4">
@@ -186,12 +249,6 @@ export default function Layout({children}:Props){
 
 
 
-
-
-                {/* MENU */}
-
-
-
                 <nav className="
                 flex-1
                 px-3
@@ -218,76 +275,27 @@ export default function Layout({children}:Props){
 
                     <Link
                     to="/dashboard"
-                    className="
-                    flex
-                    gap-3
-                    items-center
-                    px-3
-                    py-2.5
-                    rounded-xl
-                    text-sm
-                    text-zinc-300
-                    hover:bg-blue-600
-                    hover:text-white
-                    transition
-                    "
+                    className="menu"
                     >
-
                         📊 Dashboard
-
                     </Link>
-
-
-
 
 
 
                     <Link
                     to="/leads"
-                    className="
-                    flex
-                    gap-3
-                    items-center
-                    px-3
-                    py-2.5
-                    rounded-xl
-                    text-sm
-                    text-zinc-300
-                    hover:bg-blue-600
-                    hover:text-white
-                    transition
-                    "
+                    className="menu"
                     >
-
                         👥 Leads
-
                     </Link>
-
-
-
-
 
 
 
                     <Link
                     to="/conversas"
-                    className="
-                    flex
-                    gap-3
-                    items-center
-                    px-3
-                    py-2.5
-                    rounded-xl
-                    text-sm
-                    text-zinc-300
-                    hover:bg-blue-600
-                    hover:text-white
-                    transition
-                    "
+                    className="menu"
                     >
-
                         💬 Conversas
-
                     </Link>
 
 
@@ -313,105 +321,38 @@ export default function Layout({children}:Props){
 
 
 
-
-
                     <Link
                     to="/fluxos"
-                    className="
-                    flex
-                    gap-3
-                    items-center
-                    px-3
-                    py-2.5
-                    rounded-xl
-                    text-sm
-                    text-zinc-300
-                    hover:bg-blue-600
-                    hover:text-white
-                    transition
-                    "
+                    className="menu"
                     >
-
                         🔄 Fluxos
-
                     </Link>
 
 
 
                     <Link
                     to="/ia"
-                    className="
-                    flex
-                    gap-3
-                    items-center
-                    px-3
-                    py-2.5
-                    rounded-xl
-                    text-sm
-                    text-zinc-300
-                    hover:bg-blue-600
-                    hover:text-white
-                    transition
-                    "
+                    className="menu"
                     >
-
                         🧠 IA
-
                     </Link>
-
-
-
-
-
 
 
 
                     <Link
                     to="/configuracoes"
-                    className="
-                    flex
-                    gap-3
-                    items-center
-                    px-3
-                    py-2.5
-                    rounded-xl
-                    text-sm
-                    text-zinc-300
-                    hover:bg-blue-600
-                    hover:text-white
-                    transition
-                    "
+                    className="menu"
                     >
-
                         ⚙️ Configurações
-
                     </Link>
-
-
-
-
 
 
 
                     <Link
                     to="/plano"
-                    className="
-                    flex
-                    gap-3
-                    items-center
-                    px-3
-                    py-2.5
-                    rounded-xl
-                    text-sm
-                    text-zinc-300
-                    hover:bg-blue-600
-                    hover:text-white
-                    transition
-                    "
+                    className="menu"
                     >
-
                         💳 Plano
-
                     </Link>
 
 
@@ -422,12 +363,6 @@ export default function Layout({children}:Props){
 
 
 
-
-
-
-
-
-                {/* SAIR */}
 
 
                 <div className="
@@ -452,7 +387,6 @@ export default function Layout({children}:Props){
                     transition
                     "
 
-
                     >
 
                         🚪 Sair
@@ -472,12 +406,6 @@ export default function Layout({children}:Props){
 
 
 
-
-
-
-
-
-            {/* CONTEÚDO */}
 
 
 
