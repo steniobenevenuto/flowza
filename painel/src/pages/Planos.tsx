@@ -29,11 +29,13 @@ const [carregando,setCarregando] = useState("");
 
 
 
+
 useEffect(()=>{
 
     carregar();
 
 },[]);
+
 
 
 
@@ -72,6 +74,8 @@ async function carregar(){
 
 
 
+
+
 async function assinar(planoId:string){
 
 
@@ -79,6 +83,15 @@ async function assinar(planoId:string){
 
 
         setCarregando(planoId);
+
+
+
+        const resposta = await api.post(
+            "/pagamento",
+            {
+                planoId
+            }
+        );
 
 
 
@@ -104,7 +117,6 @@ async function assinar(planoId:string){
         );
 
 
-
     }finally{
 
 
@@ -115,6 +127,8 @@ async function assinar(planoId:string){
 
 
 }
+
+
 
 
 
@@ -146,6 +160,7 @@ return(
 Escolha o plano ideal para sua empresa crescer.
 
 </p>
+
 
 
 
@@ -209,6 +224,8 @@ plano.id === "pro"
 
 
 
+
+
 {
 
 plano.id === "pro" && (
@@ -236,6 +253,7 @@ plano.id === "pro" && (
 {plano.nome}
 
 </h2>
+
 
 
 
@@ -301,6 +319,7 @@ className="flex gap-2"
 ))
 
 
+
 }
 
 
@@ -357,6 +376,8 @@ plano.id === "pro"
 
 
 
+
+
 {
 
 carregando === plano.id
@@ -370,6 +391,8 @@ carregando === plano.id
 "Assinar plano"
 
 }
+
+
 
 
 
@@ -388,12 +411,15 @@ carregando === plano.id
 ))
 
 
+
 }
 
 
 
 
 </div>
+
+
 
 
 

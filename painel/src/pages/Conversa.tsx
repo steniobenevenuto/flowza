@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
+
 import socket from "../services/socket";
 
 import Layout from "../components/Layout";
 import api from "../services/api";
 
 
-interface Lead{
+interface Lead {
 
     id:number;
     nome:string;
@@ -19,8 +20,7 @@ interface Lead{
 }
 
 
-
-interface Mensagem{
+interface Mensagem {
 
     id:number;
     texto:string;
@@ -30,56 +30,33 @@ interface Mensagem{
 }
 
 
-
-interface ConversaResponse{
+interface ConversaResponse {
 
     lead:Lead;
-
     mensagens:Mensagem[];
 
 }
 
 
 
-
-const socket = io("https://flowza-production-9b03.up.railway.app");
-    {
-
-        auth:{
-
-            token:
-            localStorage.getItem("token")
-
-        }
-
-    }
-);
-
-
-
-
-
 export default function Conversa(){
 
 
-const {leadId}=useParams();
+const { leadId } = useParams();
 
 
 
-const [lead,setLead]=useState<Lead|null>(null);
+const [lead,setLead] = useState<Lead|null>(null);
 
 
-const [mensagens,setMensagens]=useState<Mensagem[]>([]);
+const [mensagens,setMensagens] = useState<Mensagem[]>([]);
 
 
-const [texto,setTexto]=useState("");
+const [texto,setTexto] = useState("");
 
 
 
-const mensagensRef =
-useRef<HTMLDivElement>(null);
-
-
+const mensagensRef = useRef<HTMLDivElement>(null);
 
 
 
@@ -87,28 +64,14 @@ useRef<HTMLDivElement>(null);
 useEffect(()=>{
 
 
-const empresaId =
-localStorage.getItem(
-"empresaId"
-);
-
-
-
-console.log(
-"Entrando empresa:",
-empresaId
-);
-
+const empresaId = localStorage.getItem("empresaId");
 
 
 if(empresaId){
 
 socket.emit(
-
 "entrar_empresa",
-
 Number(empresaId)
-
 );
 
 }
@@ -119,37 +82,19 @@ carregar();
 
 
 
+function novaMensagem(msg:any){
 
 
-socket.on(
-
-"nova-mensagem",
-
-(msg)=>{
-
-
-console.log(
-"SOCKET RECEBIDO:",
-msg
-);
-
-
-
-if(
-String(msg.leadId) === leadId
-){
+if(String(msg.leadId) === leadId){
 
 
 setTimeout(()=>{
 
-
 carregar();
-
 
 },300);
 
 
-
 }
 
 
@@ -157,9 +102,10 @@ carregar();
 
 
 
+socket.on(
+"nova-mensagem",
+novaMensagem
 );
-
-
 
 
 
@@ -167,7 +113,8 @@ return()=>{
 
 
 socket.off(
-"nova-mensagem"
+"nova-mensagem",
+novaMensagem
 );
 
 
@@ -176,7 +123,6 @@ socket.off(
 
 
 },[leadId]);
-
 
 
 
@@ -194,8 +140,7 @@ mensagensRef.current.scrollTo({
 top:
 mensagensRef.current.scrollHeight,
 
-behavior:
-"smooth"
+behavior:"smooth"
 
 });
 
@@ -212,16 +157,13 @@ behavior:
 
 
 
-
 async function carregar(){
 
 
 try{
 
 
-const resposta =
-
-await api.get<ConversaResponse>(
+const resposta = await api.get<ConversaResponse>(
 
 `/conversas/${leadId}`
 
@@ -230,36 +172,25 @@ await api.get<ConversaResponse>(
 
 
 setLead(
-
 resposta.data.lead
-
 );
 
 
 
 setMensagens(
-
 resposta.data.mensagens
-
 );
 
 
 
 }catch(erro){
 
-
-console.log(
-erro
-);
-
+console.log(erro);
 
 }
 
 
-
 }
-
-
 
 
 
@@ -284,9 +215,7 @@ await api.post(
 `/enviar/${leadId}`,
 
 {
-
 texto
-
 }
 
 );
@@ -299,14 +228,9 @@ setTexto("");
 
 }catch(erro){
 
-
-console.log(
-erro
-);
-
+console.log(erro);
 
 }
-
 
 
 }
@@ -318,9 +242,7 @@ erro
 
 
 
-
-return(
-
+return (
 
 <Layout>
 
@@ -328,14 +250,10 @@ return(
 <div className="bg-white rounded-xl shadow h-[80vh] flex flex-col overflow-hidden">
 
 
-
-
-
 <div className="border-b p-5 flex items-center gap-4">
 
 
 <div className="w-14 h-14 rounded-full bg-green-600 text-white flex items-center justify-center text-2xl font-bold">
-
 
 {
 lead?.nome
@@ -343,9 +261,7 @@ lead?.nome
 .toUpperCase()
 }
 
-
 </div>
-
 
 
 
@@ -359,13 +275,11 @@ lead?.nome
 </h2>
 
 
-
 <p className="text-gray-500">
 
 📞 {lead?.telefone}
 
 </p>
-
 
 
 <p className="text-gray-500">
@@ -386,8 +300,6 @@ lead?.nome
 
 
 
-
-
 <div
 
 ref={mensagensRef}
@@ -397,8 +309,8 @@ className="flex-1 overflow-y-auto bg-gray-100 p-6 space-y-4"
 >
 
 
-
-{mensagens.map((msg)=>(
+{
+mensagens.map((msg)=>(
 
 
 <div
@@ -453,12 +365,12 @@ new Date(msg.data)
 </div>
 
 
-))}
+))
+
+}
 
 
 </div>
-
-
 
 
 
@@ -497,7 +409,6 @@ enviar();
 
 
 
-
 <button
 
 onClick={enviar}
@@ -513,8 +424,6 @@ Enviar
 
 
 </div>
-
-
 
 
 
