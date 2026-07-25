@@ -3,7 +3,9 @@ import jwt from "jsonwebtoken";
 
 import prisma from "../database";
 
-const JWT_SECRET = process.env.JWT_SECRET || "flowza-secret";
+import {
+    JWT_SECRET
+} from "../config/jwt";
 
 export async function criarUsuario(
     nome: string,
