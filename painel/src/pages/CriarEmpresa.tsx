@@ -37,7 +37,21 @@ setForm({
 
 
 
+
 async function criar(){
+
+
+console.log(
+    "CRIAR EMPRESA TOKEN:",
+    localStorage.getItem("token")
+);
+
+
+console.log(
+    "FORM EMPRESA:",
+    form
+);
+
 
 
 try{
@@ -49,6 +63,13 @@ const resposta = await api.post(
 
     form
 
+);
+
+
+
+console.log(
+    "RESPOSTA EMPRESA:",
+    resposta.data
 );
 
 
@@ -74,7 +95,7 @@ localStorage.setItem(
 
 
 alert(
-"Empresa criada com sucesso 🚀"
+    "Empresa criada com sucesso 🚀"
 );
 
 
@@ -86,7 +107,11 @@ navigate("/dashboard");
 }catch(error:any){
 
 
-console.log(error);
+console.log(
+    "ERRO EMPRESA:",
+    error
+);
+
 
 
 alert(
@@ -102,6 +127,8 @@ error.response?.data?.erro ||
 
 
 }
+
+
 
 
 
@@ -154,6 +181,7 @@ onChange={alterar}
 
 
 
+
 <input
 
 className="w-full border p-3 rounded-lg mb-4"
@@ -173,6 +201,7 @@ onChange={alterar}
 
 
 
+
 <input
 
 className="w-full border p-3 rounded-lg mb-6"
@@ -186,6 +215,7 @@ value={form.telefoneWhatsapp}
 onChange={alterar}
 
 />
+
 
 
 

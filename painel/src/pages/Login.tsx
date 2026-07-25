@@ -21,7 +21,6 @@ const navigate = useNavigate();
 
 
 
-
 async function entrar(){
 
 
@@ -44,9 +43,15 @@ senha
 
 
 
+console.log(
+    "RESPOSTA LOGIN:",
+    resposta.data
+);
 
 
-// salva credenciais para atualizar token depois
+
+
+// salva credenciais
 
 localStorage.setItem(
 
@@ -70,9 +75,6 @@ senha
 
 
 
-
-
-
 if(resposta.data.precisaCriarEmpresa){
 
 
@@ -84,6 +86,14 @@ localStorage.setItem(
 resposta.data.token
 
 );
+
+
+
+console.log(
+    "TOKEN SALVO LOGIN:",
+    localStorage.getItem("token")
+);
+
 
 
 
@@ -113,13 +123,19 @@ return;
 
 
 
-
 localStorage.setItem(
 
 "token",
 
 resposta.data.token
 
+);
+
+
+
+console.log(
+    "TOKEN SALVO DASHBOARD:",
+    localStorage.getItem("token")
 );
 
 
@@ -143,7 +159,6 @@ resposta.data.empresa.id
 
 
 
-
 localStorage.setItem(
 
 "empresaNome",
@@ -151,7 +166,6 @@ localStorage.setItem(
 resposta.data.empresa.nome
 
 );
-
 
 
 
@@ -176,10 +190,13 @@ navigate("/dashboard");
 
 
 
-
 }catch(error:any){
 
 
+console.log(
+    "ERRO LOGIN:",
+    error
+);
 
 
 
@@ -208,16 +225,11 @@ error.response?.data?.erro ||
 
 
 
-
 }
 
 
 
 }
-
-
-
-
 
 
 
@@ -234,45 +246,25 @@ return(
 
 
 <div className="
-
 min-h-screen
-
 bg-zinc-900
-
 flex
-
 items-center
-
 justify-center
-
 p-6
-
 ">
-
 
 
 <div className="
-
 bg-zinc-800
-
 border
-
 border-zinc-700
-
 rounded-2xl
-
 shadow-xl
-
 w-[500px]
-
 p-10
-
 text-center
-
 ">
-
-
-
 
 
 <div className="text-6xl mb-5">
@@ -283,44 +275,27 @@ text-center
 
 
 
-
-
 <h1 className="
-
 text-3xl
-
 font-bold
-
 text-white
-
 mb-3
-
 ">
 
-
 Seu teste gratuito terminou
-
 
 </h1>
 
 
 
 
-
-
 <p className="
-
 text-zinc-400
-
 mb-8
-
 ">
 
-
 Para continuar usando a Flowza,
-
 escolha um plano.
-
 
 </p>
 
@@ -328,47 +303,26 @@ escolha um plano.
 
 
 
-
-
 <button
-
 
 onClick={()=>navigate("/plano")}
 
-
-
 className="
-
 w-full
-
 bg-blue-600
-
 hover:bg-blue-700
-
 text-white
-
 p-4
-
 rounded-xl
-
 font-semibold
-
 transition
-
 "
-
 
 >
 
-
 Escolher plano
 
-
 </button>
-
-
-
-
 
 
 
@@ -396,44 +350,27 @@ return(
 
 
 <div className="
-
 min-h-screen
-
 bg-zinc-900
-
 flex
-
 items-center
-
 justify-center
-
 p-6
-
 ">
-
 
 
 
 
 
 <div className="
-
 bg-zinc-800
-
 border
-
 border-zinc-700
-
 rounded-2xl
-
 shadow-2xl
-
 w-[420px]
-
 p-8
-
 ">
-
 
 
 
@@ -445,21 +382,13 @@ p-8
 
 
 
-
-
 <h1 className="
-
 text-4xl
-
 font-bold
-
 text-white
-
 ">
 
-
 Flowza
-
 
 </h1>
 
@@ -467,23 +396,14 @@ Flowza
 
 
 
-
 <p className="
-
 text-zinc-400
-
 mt-2
-
 ">
-
 
 Automação inteligente para seu negócio
 
-
 </p>
-
-
-
 
 
 
@@ -499,49 +419,29 @@ Automação inteligente para seu negócio
 
 <input
 
-
 className="
-
 w-full
-
 bg-zinc-900
-
 border
-
 border-zinc-700
-
 rounded-xl
-
 px-4
-
 py-3
-
 mb-4
-
 text-white
-
 outline-none
-
 focus:border-blue-500
-
 "
-
-
 
 placeholder="Email"
 
-
-
 value={email}
-
-
 
 onChange={e=>
 
 setEmail(e.target.value)
 
 }
-
 
 />
 
@@ -555,53 +455,31 @@ setEmail(e.target.value)
 
 <input
 
-
 className="
-
 w-full
-
 bg-zinc-900
-
 border
-
 border-zinc-700
-
 rounded-xl
-
 px-4
-
 py-3
-
 mb-6
-
 text-white
-
 outline-none
-
 focus:border-blue-500
-
 "
-
-
 
 type="password"
 
-
-
 placeholder="Senha"
 
-
-
 value={senha}
-
-
 
 onChange={e=>
 
 setSenha(e.target.value)
 
 }
-
 
 />
 
@@ -615,37 +493,22 @@ setSenha(e.target.value)
 
 <button
 
-
 onClick={entrar}
 
-
-
 className="
-
 w-full
-
 bg-blue-600
-
 hover:bg-blue-700
-
 text-white
-
 p-3
-
 rounded-xl
-
 font-semibold
-
 transition
-
 "
-
 
 >
 
-
 Entrar
-
 
 </button>
 
@@ -658,11 +521,8 @@ Entrar
 
 
 <div className="
-
 mt-6
-
 text-center
-
 ">
 
 
@@ -670,14 +530,10 @@ text-center
 
 
 <p className="
-
 text-zinc-400
-
 ">
 
-
 Ainda não possui uma conta?
-
 
 </p>
 
@@ -686,32 +542,20 @@ Ainda não possui uma conta?
 
 
 
-
 <button
-
 
 onClick={()=>navigate("/cadastro")}
 
-
-
 className="
-
 mt-3
-
 text-blue-400
-
 hover:text-blue-300
-
 font-semibold
-
 "
-
 
 >
 
-
 Criar minha conta gratuitamente
-
 
 </button>
 
@@ -719,9 +563,7 @@ Criar minha conta gratuitamente
 
 
 
-
 </div>
-
 
 
 
