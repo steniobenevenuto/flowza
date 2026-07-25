@@ -52,8 +52,8 @@ function normalizarTelefone(message:any){
 
 
 
-
 let iniciando = false;
+
 
 
 const client = new Client({
@@ -67,13 +67,7 @@ const client = new Client({
 
     puppeteer:{
 
-
         headless:true,
-
-
-        executablePath:
-        "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-
 
         args:[
 
@@ -89,12 +83,13 @@ const client = new Client({
 
         ],
 
-
         timeout:60000
 
     }
 
 });
+
+
 
 
 
@@ -119,6 +114,8 @@ client.on("qr",(qr)=>{
 
 
 
+
+
 client.on("authenticated",()=>{
 
     console.log(
@@ -126,6 +123,7 @@ client.on("authenticated",()=>{
     );
 
 });
+
 
 
 
@@ -152,6 +150,8 @@ client.on("ready",()=>{
 
 
 
+
+
 client.on("auth_failure",(msg)=>{
 
     console.log(
@@ -160,6 +160,8 @@ client.on("auth_failure",(msg)=>{
     );
 
 });
+
+
 
 
 
@@ -210,8 +212,11 @@ return;
 
 
 
+
 const contato =
 await message.getContact();
+
+
 
 
 
@@ -220,10 +225,14 @@ normalizarTelefone(message);
 
 
 
+
+
 console.log(
 "Mensagem recebida:",
 message.body
 );
+
+
 
 
 
@@ -240,6 +249,8 @@ client.info.wid.user
 
 
 
+
+
 if(!empresa){
 
 console.log(
@@ -249,6 +260,8 @@ console.log(
 return;
 
 }
+
+
 
 
 
@@ -281,6 +294,8 @@ empresa.id
 
 
 
+
+
 let lead =
 await buscarLead(
 
@@ -293,8 +308,11 @@ empresa.id
 
 
 
+
 if(!lead)
 return;
+
+
 
 
 
@@ -339,8 +357,12 @@ data:new Date()
 
 
 
+
+
 let etapaAtual =
 lead.etapa || 1;
+
+
 
 
 
@@ -350,6 +372,8 @@ const texto =
 message.body
 .toLowerCase()
 .trim();
+
+
 
 
 
@@ -365,6 +389,8 @@ const saudacoes=[
 "boa noite"
 
 ];
+
+
 
 
 
@@ -396,6 +422,8 @@ etapaAtual=1;
 
 
 
+
+
 const perguntaAtual =
 await buscarPerguntaAtual(
 
@@ -408,7 +436,12 @@ etapaAtual
 
 
 
+
+
 let resposta="";
+
+
+
 
 
 
@@ -419,9 +452,12 @@ if(perguntaAtual){
 
 
 
+
+
 if(
 
 etapaAtual===1 &&
+
 saudacoes.includes(texto)
 
 ){
@@ -434,6 +470,9 @@ perguntaAtual.pergunta;
 }
 
 else{
+
+
+
 
 
 
@@ -459,6 +498,8 @@ empresa.id
 
 
 
+
+
 await registrarResposta(
 
 telefone,
@@ -472,8 +513,15 @@ empresa.id
 
 
 
+
+
+
 const novaEtapa =
 etapaAtual+1;
+
+
+
+
 
 
 
@@ -491,6 +539,8 @@ empresa.id
 
 
 
+
+
 const proxima =
 await buscarProximaPergunta(
 
@@ -499,6 +549,9 @@ empresa.id,
 novaEtapa
 
 );
+
+
+
 
 
 
@@ -527,6 +580,7 @@ message.body
 }
 
 
+
 }
 
 
@@ -555,12 +609,16 @@ message.body
 
 
 
+
+
 if(!resposta){
 
 resposta =
 "Estou analisando suas informações 😊";
 
 }
+
+
 
 
 
@@ -574,6 +632,8 @@ lead.id,
 resposta
 
 );
+
+
 
 
 
@@ -615,12 +675,17 @@ data:new Date()
 
 
 
+
+
 }catch(error){
 
 
 console.log(
+
 "Erro WhatsApp:",
+
 error
+
 );
 
 
@@ -652,7 +717,9 @@ return;
 }
 
 
+
 iniciando=true;
+
 
 
 console.log(
@@ -661,14 +728,21 @@ console.log(
 
 
 
+
+
 client.initialize()
+
 .catch(err=>{
 
 
 console.log(
+
 "Erro inicializando WhatsApp:",
+
 err
+
 );
+
 
 
 iniciando=false;
@@ -678,6 +752,7 @@ iniciando=false;
 
 
 }
+
 
 
 
