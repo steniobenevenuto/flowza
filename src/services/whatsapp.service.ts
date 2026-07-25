@@ -70,8 +70,8 @@ const client = new Client({
         headless:true,
 
 
+        // Railway Linux
         executablePath:
-        process.env.CHROME_PATH ||
         "/usr/bin/chromium",
 
 
@@ -106,8 +106,6 @@ const client = new Client({
 
 
 
-
-
 client.on("qr",(qr)=>{
 
 
@@ -129,8 +127,6 @@ client.on("qr",(qr)=>{
 
 
 
-
-
 client.on("authenticated",()=>{
 
     console.log(
@@ -138,8 +134,6 @@ client.on("authenticated",()=>{
     );
 
 });
-
-
 
 
 
@@ -169,8 +163,6 @@ client.on("ready",()=>{
 
 
 
-
-
 client.on("auth_failure",(msg)=>{
 
     console.log(
@@ -179,8 +171,6 @@ client.on("auth_failure",(msg)=>{
     );
 
 });
-
-
 
 
 
@@ -198,7 +188,6 @@ client.on("disconnected",(reason)=>{
 
 
 });
-
 
 
 
@@ -233,6 +222,7 @@ return;
 
 
 
+
 console.log(
 "Mensagem recebida:",
 message.body
@@ -248,10 +238,9 @@ await message.getContact();
 
 
 
+
 const telefone =
 normalizarTelefone(message);
-
-
 
 
 
@@ -268,8 +257,6 @@ client.info.wid.user
 
 
 
-
-
 if(!empresa){
 
 console.log(
@@ -279,9 +266,6 @@ console.log(
 return;
 
 }
-
-
-
 
 
 
@@ -319,8 +303,6 @@ empresa.id
 
 
 
-
-
 let lead =
 await buscarLead(
 
@@ -336,8 +318,6 @@ empresa.id
 
 if(!lead)
 return;
-
-
 
 
 
@@ -386,10 +366,9 @@ data:new Date()
 
 
 
-
-
 let etapaAtual =
 lead.etapa || 1;
+
 
 
 
@@ -400,6 +379,7 @@ const texto =
 message.body
 .toLowerCase()
 .trim();
+
 
 
 
@@ -421,8 +401,6 @@ const saudacoes=[
 "boa noite"
 
 ];
-
-
 
 
 
@@ -455,8 +433,6 @@ etapaAtual=1;
 
 
 
-
-
 const perguntaAtual =
 await buscarPerguntaAtual(
 
@@ -471,7 +447,6 @@ etapaAtual
 
 
 let resposta="";
-
 
 
 
@@ -552,6 +527,7 @@ etapaAtual + 1;
 
 
 
+
 await atualizarEtapa(
 
 telefone,
@@ -561,6 +537,7 @@ novaEtapa,
 empresa.id
 
 );
+
 
 
 
@@ -608,8 +585,6 @@ message.body
 
 
 
-
-
 }
 
 
@@ -639,16 +614,12 @@ message.body
 
 
 
-
-
 if(!resposta){
 
 resposta =
 "Estou analisando suas informações 😊";
 
 }
-
-
 
 
 
@@ -676,8 +647,6 @@ await message.reply(
 resposta
 
 );
-
-
 
 
 
@@ -753,7 +722,9 @@ return;
 
 
 
+
 iniciando=true;
+
 
 
 
@@ -761,6 +732,7 @@ iniciando=true;
 console.log(
 "Iniciando WhatsApp..."
 );
+
 
 
 
@@ -788,7 +760,6 @@ iniciando=false;
 
 
 }
-
 
 
 
