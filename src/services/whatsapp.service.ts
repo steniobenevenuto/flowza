@@ -56,23 +56,37 @@ let iniciando = false;
 
 
 
+const chromePath =
+process.env.CHROME_PATH ||
+"/usr/bin/chromium";
+
+
+
+console.log(
+"Chrome usado:",
+chromePath
+);
+
+
+
 const client = new Client({
 
     authStrategy:new LocalAuth({
 
-        clientId:"flowza"
+        clientId:"flowza",
+
+        dataPath:"./.wwebjs_auth"
 
     }),
 
 
     puppeteer:{
 
+
         headless:true,
 
 
-        // Railway Linux
-        executablePath:
-        "/usr/bin/chromium",
+        executablePath:chromePath,
 
 
         args:[
@@ -85,7 +99,15 @@ const client = new Client({
 
             "--disable-gpu",
 
+            "--disable-software-rasterizer",
+
             "--disable-extensions",
+
+            "--disable-background-networking",
+
+            "--disable-default-apps",
+
+            "--disable-sync",
 
             "--no-first-run",
 
@@ -94,9 +116,25 @@ const client = new Client({
         ],
 
 
-        timeout:60000
+        timeout:120000
 
     }
+
+});
+
+
+
+
+
+
+
+client.on("loading_screen",(percent,message)=>{
+
+    console.log(
+        "Carregando WhatsApp:",
+        percent,
+        message
+    );
 
 });
 
@@ -190,12 +228,6 @@ client.on("disconnected",(reason)=>{
 });
 
 
-
-
-
-
-
-
 client.on(
 "message",
 async(message)=>{
@@ -222,7 +254,6 @@ return;
 
 
 
-
 console.log(
 "Mensagem recebida:",
 message.body
@@ -238,9 +269,9 @@ await message.getContact();
 
 
 
-
 const telefone =
 normalizarTelefone(message);
+
 
 
 
@@ -257,15 +288,20 @@ client.info.wid.user
 
 
 
+
 if(!empresa){
 
+
 console.log(
-"WhatsApp sem empresa"
+"WhatsApp sem empresa configurada"
 );
+
 
 return;
 
 }
+
+
 
 
 
@@ -303,6 +339,7 @@ empresa.id
 
 
 
+
 let lead =
 await buscarLead(
 
@@ -311,6 +348,7 @@ telefone,
 empresa.id
 
 );
+
 
 
 
@@ -325,6 +363,7 @@ return;
 
 
 
+
 await salvarMensagemCliente(
 
 lead.id,
@@ -332,6 +371,7 @@ lead.id,
 message.body
 
 );
+
 
 
 
@@ -366,6 +406,8 @@ data:new Date()
 
 
 
+
+
 let etapaAtual =
 lead.etapa || 1;
 
@@ -386,7 +428,7 @@ message.body
 
 
 
-const saudacoes=[
+const saudacoes = [
 
 "oi",
 
@@ -408,6 +450,7 @@ const saudacoes=[
 
 
 
+
 if(saudacoes.includes(texto)){
 
 
@@ -422,10 +465,12 @@ empresa.id
 );
 
 
-etapaAtual=1;
+etapaAtual = 1;
 
 
 }
+
+
 
 
 
@@ -446,7 +491,9 @@ etapaAtual
 
 
 
-let resposta="";
+
+let resposta = "";
+
 
 
 
@@ -459,133 +506,127 @@ if(perguntaAtual){
 
 
 
-if(
+    if(
 
-etapaAtual===1 &&
+        etapaAtual === 1 &&
 
-saudacoes.includes(texto)
+        saudacoes.includes(texto)
 
-){
+    ){
 
 
-resposta =
-perguntaAtual.pergunta;
+        resposta =
+        perguntaAtual.pergunta;
 
 
-}
+    }
 
-else{
+    else{
 
 
+        if(perguntaAtual.campo){
 
 
+            await salvarCampoLead(
 
-if(perguntaAtual.campo){
+                telefone,
 
+                perguntaAtual.campo,
 
-await salvarCampoLead(
+                message.body,
 
-telefone,
+                empresa.id
 
-perguntaAtual.campo,
+            );
 
-message.body,
 
-empresa.id
+        }
 
-);
 
 
-}
 
 
+        await registrarResposta(
 
+            telefone,
 
+            message.body,
 
+            empresa.id
 
-await registrarResposta(
+        );
 
-telefone,
 
-message.body,
 
-empresa.id
 
-);
 
 
+        const novaEtapa =
+        etapaAtual + 1;
 
 
 
 
 
-const novaEtapa =
-etapaAtual + 1;
 
+        await atualizarEtapa(
 
+            telefone,
 
+            novaEtapa,
 
+            empresa.id
 
+        );
 
 
-await atualizarEtapa(
 
-telefone,
 
-novaEtapa,
 
-empresa.id
 
-);
 
+        const proxima =
+        await buscarProximaPergunta(
 
+            empresa.id,
 
+            novaEtapa
 
+        );
 
 
 
 
-const proxima =
-await buscarProximaPergunta(
 
-empresa.id,
 
-novaEtapa
+        if(proxima){
 
-);
 
+            resposta =
+            proxima.pergunta;
 
 
+        }
 
+        else{
 
 
-if(proxima){
+            resposta =
+            await processarMensagem(
 
-resposta =
-proxima.pergunta;
+                client.info.wid.user,
 
-}
+                telefone,
 
-else{
+                message.body
 
+            );
 
-resposta =
-await processarMensagem(
 
-client.info.wid.user,
+        }
 
-telefone,
 
-message.body
-
-);
-
-
-}
-
-
-
-}
+    }
 
 
 
@@ -594,19 +635,20 @@ message.body
 else{
 
 
-resposta =
-await processarMensagem(
+    resposta =
+    await processarMensagem(
 
-client.info.wid.user,
+        client.info.wid.user,
 
-telefone,
+        telefone,
 
-message.body
+        message.body
 
-);
+    );
 
 
 }
+
 
 
 
@@ -616,10 +658,14 @@ message.body
 
 if(!resposta){
 
+
 resposta =
 "Estou analisando suas informações 😊";
 
+
 }
+
+
 
 
 
@@ -654,6 +700,8 @@ resposta
 
 
 
+
+
 emitirParaEmpresa(
 
 empresa.id,
@@ -679,8 +727,9 @@ data:new Date()
 
 
 
+}
 
-}catch(error){
+catch(error){
 
 
 console.log(
@@ -693,7 +742,6 @@ error
 
 
 }
-
 
 
 });
@@ -709,13 +757,17 @@ error
 export function iniciarWhatsApp(){
 
 
+
 if(iniciando){
+
 
 console.log(
 "WhatsApp já iniciando..."
 );
 
+
 return;
+
 
 }
 
@@ -723,14 +775,18 @@ return;
 
 
 
-iniciando=true;
+
+iniciando = true;
+
 
 
 
 
 
 console.log(
+
 "Iniciando WhatsApp..."
+
 );
 
 
@@ -739,6 +795,18 @@ console.log(
 
 
 client.initialize()
+
+.then(()=>{
+
+
+console.log(
+
+"initialize chamado com sucesso"
+
+);
+
+
+})
 
 .catch(err=>{
 
@@ -756,6 +824,7 @@ err
 iniciando=false;
 
 
+
 });
 
 
@@ -768,8 +837,11 @@ iniciando=false;
 
 
 
+
 export function getWhatsAppClient(){
 
+
 return client;
+
 
 }

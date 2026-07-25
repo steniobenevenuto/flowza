@@ -6,13 +6,6 @@ aptPkgs = [
   "libnss3",
   "libatk-bridge2.0-0",
   "libgtk-3-0",
-  "libgbm-dev",
-  "libx11-xcb1",
-  "libxcomposite1",
-  "libxdamage1",
-  "libxrandr2",
+  "libgbm1",
   "libasound2t64"
 ]
-
-[start]
-cmd = "npm run start"
