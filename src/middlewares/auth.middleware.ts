@@ -11,13 +11,14 @@ import {
 } from "../config/jwt";
 
 
+
 export interface AuthRequest extends Request {
 
     usuario?: {
 
         id:number;
 
-        empresaId:number;
+        empresaId:number | null;
 
     };
 
@@ -25,11 +26,18 @@ export interface AuthRequest extends Request {
 
 
 
+
+
 export function authMiddleware(
+
     req:AuthRequest,
+
     res:Response,
+
     next:NextFunction
+
 ){
+
 
 
     if(req.method === "OPTIONS"){
@@ -40,30 +48,63 @@ export function authMiddleware(
 
 
 
+
+
+    const authHeader =
+        req.headers.authorization;
+
+
+
+
+
+    console.log(
+        "================ AUTH ================"
+    );
+
+
+    console.log(
+        "AUTH HEADER:",
+        authHeader
+    );
+
+
+
+    console.log(
+        "JWT SECRET USADO:",
+        JWT_SECRET
+    );
+
+
+
+
+
     const token =
-        req.headers.authorization
-        ?.replace(
+        authHeader?.replace(
             "Bearer ",
             ""
         );
 
 
 
-    console.log(
-        "AUTH HEADER:",
-        req.headers.authorization
-    );
 
 
     console.log(
-        "TOKEN:",
+        "TOKEN RECEBIDO:",
         token
     );
 
 
 
 
+
+
     if(!token){
+
+
+        console.log(
+            "SEM TOKEN"
+        );
+
 
         return res.status(401).json({
 
@@ -71,12 +112,17 @@ export function authMiddleware(
 
         });
 
+
     }
 
 
 
 
+
+
+
     try{
+
 
 
         const decoded:any = jwt.verify(
@@ -89,27 +135,56 @@ export function authMiddleware(
 
 
 
+
+
         console.log(
+
             "TOKEN DECODIFICADO:",
+
             decoded
+
         );
+
+
+
 
 
 
         req.usuario = {
 
+
             id: decoded.id,
 
-            empresaId: decoded.empresaId
+
+            empresaId:
+            decoded.empresaId ?? null
+
 
         };
 
 
 
+
+
+
         console.log(
+
             "USUARIO AUTENTICADO:",
+
             req.usuario
+
         );
+
+
+
+
+
+
+        console.log(
+            "======================================"
+        );
+
+
 
 
 
@@ -117,13 +192,34 @@ export function authMiddleware(
 
 
 
-    }catch(error){
+
+
+    }catch(error:any){
+
 
 
         console.log(
+
             "ERRO JWT:",
-            error
+
+            error.message
+
         );
+
+
+
+        console.log(
+            "TOKEN USADO NO VERIFY:",
+            token
+        );
+
+
+
+        console.log(
+            "SECRET NO VERIFY:",
+            JWT_SECRET
+        );
+
 
 
         return res.status(401).json({
@@ -133,7 +229,9 @@ export function authMiddleware(
         });
 
 
+
     }
+
 
 
 }
