@@ -69,6 +69,12 @@ const client = new Client({
 
         headless:true,
 
+
+        executablePath:
+        process.env.CHROME_PATH ||
+        "/usr/bin/chromium",
+
+
         args:[
 
             "--no-sandbox",
@@ -79,15 +85,22 @@ const client = new Client({
 
             "--disable-gpu",
 
-            "--disable-extensions"
+            "--disable-extensions",
+
+            "--no-first-run",
+
+            "--no-zygote"
 
         ],
+
 
         timeout:60000
 
     }
 
 });
+
+
 
 
 
@@ -116,6 +129,8 @@ client.on("qr",(qr)=>{
 
 
 
+
+
 client.on("authenticated",()=>{
 
     console.log(
@@ -123,6 +138,8 @@ client.on("authenticated",()=>{
     );
 
 });
+
+
 
 
 
@@ -152,6 +169,8 @@ client.on("ready",()=>{
 
 
 
+
+
 client.on("auth_failure",(msg)=>{
 
     console.log(
@@ -160,6 +179,8 @@ client.on("auth_failure",(msg)=>{
     );
 
 });
+
+
 
 
 
@@ -212,6 +233,14 @@ return;
 
 
 
+console.log(
+"Mensagem recebida:",
+message.body
+);
+
+
+
+
 
 const contato =
 await message.getContact();
@@ -219,18 +248,8 @@ await message.getContact();
 
 
 
-
 const telefone =
 normalizarTelefone(message);
-
-
-
-
-
-console.log(
-"Mensagem recebida:",
-message.body
-);
 
 
 
@@ -268,6 +287,7 @@ return;
 
 
 
+
 await salvarLead(
 
 {
@@ -275,19 +295,24 @@ await salvarLead(
 nome:
 contato.pushname || "Sem nome",
 
+
 telefone,
+
 
 ultimaMensagem:
 message.body,
+
 
 data:
 new Date()
 
 },
 
+
 empresa.id
 
 );
+
 
 
 
@@ -319,6 +344,7 @@ return;
 
 
 
+
 await salvarMensagemCliente(
 
 lead.id,
@@ -326,6 +352,7 @@ lead.id,
 message.body
 
 );
+
 
 
 
@@ -359,9 +386,10 @@ data:new Date()
 
 
 
+
+
 let etapaAtual =
 lead.etapa || 1;
-
 
 
 
@@ -378,17 +406,22 @@ message.body
 
 
 
-
 const saudacoes=[
 
 "oi",
+
 "olá",
+
 "ola",
+
 "bom dia",
+
 "boa tarde",
+
 "boa noite"
 
 ];
+
 
 
 
@@ -437,7 +470,6 @@ etapaAtual
 
 
 
-
 let resposta="";
 
 
@@ -449,8 +481,6 @@ let resposta="";
 
 
 if(perguntaAtual){
-
-
 
 
 
@@ -470,7 +500,6 @@ perguntaAtual.pergunta;
 }
 
 else{
-
 
 
 
@@ -499,7 +528,6 @@ empresa.id
 
 
 
-
 await registrarResposta(
 
 telefone,
@@ -517,8 +545,7 @@ empresa.id
 
 
 const novaEtapa =
-etapaAtual+1;
-
+etapaAtual + 1;
 
 
 
@@ -581,6 +608,8 @@ message.body
 
 
 
+
+
 }
 
 
@@ -611,12 +640,14 @@ message.body
 
 
 
+
 if(!resposta){
 
 resposta =
 "Estou analisando suas informações 😊";
 
 }
+
 
 
 
@@ -639,11 +670,14 @@ resposta
 
 
 
+
 await message.reply(
 
 resposta
 
 );
+
+
 
 
 
@@ -718,7 +752,9 @@ return;
 
 
 
+
 iniciando=true;
+
 
 
 
@@ -752,6 +788,7 @@ iniciando=false;
 
 
 }
+
 
 
 
