@@ -6,7 +6,6 @@ import cors from "cors";
 import { createServer } from "http";
 import { Server } from "socket.io";
 
-
 // ======================
 // ROTAS
 // ======================
@@ -22,30 +21,18 @@ import fluxoRoutes from "./routes/fluxo.routes";
 import planoRoutes from "./routes/plano.routes";
 import pagamentoRoutes from "./routes/pagamento.routes";
 
-
 // ======================
 // SERVIÇOS
 // ======================
 
-import {
-    iniciarWhatsApp
-} from "./services/whatsapp.service";
-
-
-import {
-    iniciarSocket
-} from "./services/socket.service";
-
-
+import { iniciarWhatsApp } from "./services/whatsapp.service";
+import { iniciarSocket } from "./services/socket.service";
 
 // ======================
 // APP
 // ======================
 
 const app = express();
-
-
-
 
 // ======================
 // CORS
@@ -66,109 +53,44 @@ app.use(
   })
 );
 
+// ======================
+// MIDDLEWARES
+// ======================
 
-
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // ======================
 // TESTE
 // ======================
 
-app.get(
-    "/",
-    (req,res)=>{
-
-        res.json({
-
-            status:"online",
-
-            mensagem:
-            "Flowza SaaS funcionando 🚀"
-
-        });
-
-    }
-);
-
-
-
-
+app.get("/", (req, res) => {
+  res.json({
+    status: "online",
+    mensagem: "Flowza SaaS funcionando 🚀",
+  });
+});
 
 // ======================
 // ROTAS API
 // ======================
 
-
-app.use(
-    "/auth",
-    authRoutes
-);
-
-
-app.use(
-    "/dashboard",
-    dashboardRoutes
-);
-
-
-app.use(
-    "/leads",
-    leadRoutes
-);
-
-
-app.use(
-    "/conversas",
-    conversaRoutes
-);
-
-
-app.use(
-    "/enviar",
-    envioRoutes
-);
-
-
-app.use(
-    "/empresa",
-    empresaRoutes
-);
-
-
-app.use(
-    "/configuracao",
-    configuracaoRoutes
-);
-
-
-app.use(
-    "/fluxo",
-    fluxoRoutes
-);
-
-
-app.use(
-    "/planos",
-    planoRoutes
-);
-
-
-app.use(
-    "/pagamento",
-    pagamentoRoutes
-);
-
-
-
-
+app.use("/auth", authRoutes);
+app.use("/dashboard", dashboardRoutes);
+app.use("/leads", leadRoutes);
+app.use("/conversas", conversaRoutes);
+app.use("/enviar", envioRoutes);
+app.use("/empresa", empresaRoutes);
+app.use("/configuracao", configuracaoRoutes);
+app.use("/fluxo", fluxoRoutes);
+app.use("/planos", planoRoutes);
+app.use("/pagamento", pagamentoRoutes);
 
 // ======================
 // SOCKET.IO
 // ======================
 
-
 const httpServer = createServer(app);
-
-
 
 const io = new Server(httpServer, {
   cors: {
@@ -181,144 +103,41 @@ const io = new Server(httpServer, {
   },
 });
 
-
-
 iniciarSocket(io);
 
+io.on("connection", (socket) => {
+  console.log("Painel conectado:", socket.id);
 
+  socket.on("entrar_empresa", (empresaId) => {
+    console.log("Empresa socket:", empresaId);
 
-io.on(
+    socket.join(`empresa_${empresaId}`);
 
-    "connection",
+    console.log("Socket entrou:", `empresa_${empresaId}`);
+  });
 
-    (socket)=>{
-
-
-        console.log(
-            "Painel conectado:",
-            socket.id
-        );
-
-
-
-        socket.on(
-
-            "entrar_empresa",
-
-            (empresaId)=>{
-
-
-                console.log(
-                    "Empresa socket:",
-                    empresaId
-                );
-
-
-
-                socket.join(
-                    `empresa_${empresaId}`
-                );
-
-
-
-                console.log(
-                    "Socket entrou:",
-                    `empresa_${empresaId}`
-                );
-
-
-            }
-
-        );
-
-
-
-        socket.on(
-
-            "disconnect",
-
-            ()=>{
-
-
-                console.log(
-                    "Painel desconectado:",
-                    socket.id
-                );
-
-
-            }
-
-        );
-
-
-    }
-
-);
-
-
-
-
+  socket.on("disconnect", () => {
+    console.log("Painel desconectado:", socket.id);
+  });
+});
 
 // ======================
 // START
 // ======================
 
+const PORT = process.env.PORT || 3000;
 
-const PORT =
-    process.env.PORT || 3000;
+httpServer.listen(PORT, () => {
+  console.log(`Flowza rodando na porta ${PORT} 🚀`);
 
-
-
-httpServer.listen(
-
-    PORT,
-
-    ()=>{
-
-
-        console.log(
-            `Flowza rodando na porta ${PORT} 🚀`
-        );
-
-
-
-        if(
-            process.env.INICIAR_WHATSAPP === "true"
-        ){
-
-            try{
-
-                iniciarWhatsApp();
-
-
-                console.log(
-                    "WhatsApp iniciado com sucesso."
-                );
-
-
-            }catch(error){
-
-
-                console.error(
-                    "Erro ao iniciar WhatsApp:",
-                    error
-                );
-
-
-            }
-
-
-        }else{
-
-
-            console.log(
-                "WhatsApp desabilitado nesta instância."
-            );
-
-
-        }
-
-
+  if (process.env.INICIAR_WHATSAPP === "true") {
+    try {
+      iniciarWhatsApp();
+      console.log("WhatsApp iniciado com sucesso.");
+    } catch (error) {
+      console.error("Erro ao iniciar WhatsApp:", error);
     }
-
-);
+  } else {
+    console.log("WhatsApp desabilitado nesta instância.");
+  }
+});
