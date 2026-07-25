@@ -82,8 +82,6 @@ export default function Layout({children}:Props){
 
 
 
-
-
     function sair(){
 
 
@@ -102,10 +100,30 @@ export default function Layout({children}:Props){
 
 
 
+
     const empresa =
         localStorage.getItem("empresaNome")
         ||
         "Minha Empresa";
+
+
+
+
+
+
+    const menuClass = `
+    flex
+    items-center
+    w-full
+    px-3
+    py-2.5
+    rounded-xl
+    text-sm
+    text-zinc-300
+    hover:bg-zinc-800
+    hover:text-white
+    transition
+    `;
 
 
 
@@ -122,8 +140,9 @@ export default function Layout({children}:Props){
         ">
 
 
+
             <aside className="
-            w-60
+            w-64
             bg-zinc-950
             border-r
             border-zinc-800
@@ -138,6 +157,7 @@ export default function Layout({children}:Props){
                 border-b
                 border-zinc-800
                 ">
+
 
 
                     <h1 className="
@@ -155,6 +175,7 @@ export default function Layout({children}:Props){
 
 
                     </h1>
+
 
 
 
@@ -201,7 +222,9 @@ export default function Layout({children}:Props){
 
 
 
+
                 <div className="p-4">
+
 
 
                     <div className="
@@ -224,6 +247,7 @@ export default function Layout({children}:Props){
 
 
 
+
                         <p className="
                         text-sm
                         font-semibold
@@ -231,9 +255,7 @@ export default function Layout({children}:Props){
                         truncate
                         ">
 
-
                             {empresa}
-
 
                         </p>
 
@@ -249,10 +271,13 @@ export default function Layout({children}:Props){
 
 
 
+
                 <nav className="
+                flex
+                flex-col
                 flex-1
                 px-3
-                space-y-1
+                gap-1
                 ">
 
 
@@ -262,7 +287,7 @@ export default function Layout({children}:Props){
                     text-[11px]
                     uppercase
                     text-zinc-500
-                    mb-3
+                    mb-2
                     ">
 
                         Principal
@@ -275,28 +300,31 @@ export default function Layout({children}:Props){
 
                     <Link
                     to="/dashboard"
-                    className="menu"
+                    className={menuClass}
                     >
                         📊 Dashboard
                     </Link>
 
 
 
+
                     <Link
                     to="/leads"
-                    className="menu"
+                    className={menuClass}
                     >
                         👥 Leads
                     </Link>
 
 
 
+
                     <Link
                     to="/conversas"
-                    className="menu"
+                    className={menuClass}
                     >
                         💬 Conversas
                     </Link>
+
 
 
 
@@ -310,7 +338,7 @@ export default function Layout({children}:Props){
                     uppercase
                     text-zinc-500
                     mt-7
-                    mb-3
+                    mb-2
                     ">
 
                         Ferramentas
@@ -321,43 +349,53 @@ export default function Layout({children}:Props){
 
 
 
+
                     <Link
                     to="/fluxos"
-                    className="menu"
+                    className={menuClass}
                     >
                         🔄 Fluxos
                     </Link>
 
 
 
+
+
                     <Link
                     to="/ia"
-                    className="menu"
+                    className={menuClass}
                     >
                         🧠 IA
                     </Link>
 
 
 
+
+
                     <Link
                     to="/configuracoes"
-                    className="menu"
+                    className={menuClass}
                     >
                         ⚙️ Configurações
                     </Link>
 
 
 
+
+
                     <Link
                     to="/plano"
-                    className="menu"
+                    className={menuClass}
                     >
                         💳 Plano
                     </Link>
 
 
 
+
+
                 </nav>
+
 
 
 
@@ -370,6 +408,7 @@ export default function Layout({children}:Props){
                 border-t
                 border-zinc-800
                 ">
+
 
 
                     <button
@@ -401,7 +440,10 @@ export default function Layout({children}:Props){
 
 
 
+
             </aside>
+
+
 
 
 
@@ -425,9 +467,11 @@ export default function Layout({children}:Props){
 
 
 
+
         </div>
 
 
     );
+
 
 }
