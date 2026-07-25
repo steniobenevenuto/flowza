@@ -52,38 +52,18 @@ const app = express();
 // ======================
 
 const FRONTEND_URL =
-    "https://adequate-endurance-production-ac72.up.railway.app";
-
-
-app.use(
-    cors({
-
-        origin:[
-            "http://localhost:5173",
-            FRONTEND_URL
-        ],
-
-        methods:[
-            "GET",
-            "POST",
-            "PUT",
-            "PATCH",
-            "DELETE"
-        ],
-
-        allowedHeaders:[
-            "Content-Type",
-            "Authorization"
-        ],
-
-        credentials:true
-
-    })
-);
-
+  process.env.FRONTEND_URL || "https://www.flowza.sbs";
 
 app.use(
-    express.json()
+  cors({
+    origin: [
+      "http://localhost:5173",
+      FRONTEND_URL,
+    ],
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
 );
 
 
@@ -190,36 +170,16 @@ const httpServer = createServer(app);
 
 
 
-const io = new Server(
-
-    httpServer,
-
-    {
-
-        cors:{
-
-            origin:[
-
-                "http://localhost:5173",
-
-                FRONTEND_URL
-
-            ],
-
-            methods:[
-
-                "GET",
-                "POST"
-
-            ],
-
-            credentials:true
-
-        }
-
-    }
-
-);
+const io = new Server(httpServer, {
+  cors: {
+    origin: [
+      "http://localhost:5173",
+      FRONTEND_URL,
+    ],
+    credentials: true,
+    methods: ["GET", "POST"],
+  },
+});
 
 
 
