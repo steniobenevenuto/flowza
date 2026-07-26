@@ -1,7 +1,6 @@
 import pkg from "whatsapp-web.js";
 const { Client, LocalAuth } = pkg;
 
-import qrcode from "qrcode-terminal";
 
 import {
     salvarLead,
@@ -11,27 +10,33 @@ import {
     salvarCampoLead
 } from "./lead.service";
 
+
 import {
     buscarProximaPergunta,
     buscarPerguntaAtual
 } from "./fluxo.service";
 
+
 import {
     buscarEmpresaPorWhatsapp
 } from "./empresa.service";
 
+
 import {
     processarMensagem
 } from "./motor.service";
+
 
 import {
     salvarMensagemCliente,
     salvarMensagemBot
 } from "./mensagem.service";
 
+
 import {
     emitirParaEmpresa
 } from "./socket.service";
+
 
 
 function normalizarTelefone(message:any){
@@ -47,7 +52,12 @@ function normalizarTelefone(message:any){
 }
 
 
+
 let iniciando = false;
+
+
+let empresaConectandoId:number | null = null;
+
 
 
 
@@ -57,10 +67,13 @@ process.env.CHROME_PATH ??
 "/usr/bin/chromium";
 
 
+
 console.log(
     "Chrome usado:",
     chromePath
 );
+
+
 
 
 
@@ -77,9 +90,7 @@ const client = new Client({
 
     puppeteer:{
 
-
         headless:true,
-
 
         executablePath:chromePath,
 
@@ -118,6 +129,7 @@ const client = new Client({
 
 
 
+
 client.on("loading_screen",(percent,message)=>{
 
     console.log(
@@ -138,13 +150,26 @@ client.on("qr",(qr)=>{
 
 
     console.log(
-        "Escaneie o QR Code:"
+        "QR Code gerado"
     );
 
 
-    qrcode.generate(qr,{
-        small:true
-    });
+
+    if(empresaConectandoId){
+
+
+        emitirParaEmpresa(
+
+            empresaConectandoId,
+
+            "whatsapp_qr",
+
+            qr
+
+        );
+
+
+    }
 
 
 });
@@ -157,9 +182,11 @@ client.on("qr",(qr)=>{
 
 client.on("authenticated",()=>{
 
+
     console.log(
         "WhatsApp autenticado ✅"
     );
+
 
 });
 
@@ -183,6 +210,26 @@ client.on("ready",()=>{
     );
 
 
+
+    if(empresaConectandoId){
+
+
+        emitirParaEmpresa(
+
+            empresaConectandoId,
+
+            "whatsapp_status",
+
+            {
+                status:"connected"
+            }
+
+        );
+
+
+    }
+
+
 });
 
 
@@ -193,10 +240,12 @@ client.on("ready",()=>{
 
 client.on("auth_failure",(msg)=>{
 
+
     console.log(
         "Falha autenticação:",
         msg
     );
+
 
 });
 
@@ -215,7 +264,32 @@ client.on("disconnected",(reason)=>{
     );
 
 
+    if(empresaConectandoId){
+
+
+        emitirParaEmpresa(
+
+            empresaConectandoId,
+
+            "whatsapp_status",
+
+            {
+                status:"disconnected"
+            }
+
+        );
+
+
+    }
+
+
 });
+
+
+
+
+
+
 
 
 client.on(
@@ -253,6 +327,7 @@ message.body
 
 
 
+
 const contato =
 await message.getContact();
 
@@ -273,7 +348,6 @@ await buscarEmpresaPorWhatsapp(
 client.info.wid.user
 
 );
-
 
 
 
@@ -305,13 +379,10 @@ await salvarLead(
 nome:
 contato.pushname || "Sem nome",
 
-
 telefone,
-
 
 ultimaMensagem:
 message.body,
-
 
 data:
 new Date()
@@ -322,7 +393,6 @@ new Date()
 empresa.id
 
 );
-
 
 
 
@@ -352,8 +422,6 @@ return;
 
 
 
-
-
 await salvarMensagemCliente(
 
 lead.id,
@@ -361,8 +429,6 @@ lead.id,
 message.body
 
 );
-
-
 
 
 
@@ -397,10 +463,8 @@ data:new Date()
 
 
 
-
 let etapaAtual =
 lead.etapa || 1;
-
 
 
 
@@ -411,7 +475,6 @@ const texto =
 message.body
 .toLowerCase()
 .trim();
-
 
 
 
@@ -467,7 +530,6 @@ etapaAtual = 1;
 
 
 
-
 const perguntaAtual =
 await buscarPerguntaAtual(
 
@@ -490,133 +552,138 @@ let resposta = "";
 
 
 
-
-
 if(perguntaAtual){
 
 
 
-    if(
+if(
 
-        etapaAtual === 1 &&
+etapaAtual === 1 &&
 
-        saudacoes.includes(texto)
+saudacoes.includes(texto)
 
-    ){
+){
 
 
-        resposta =
-        perguntaAtual.pergunta;
+resposta =
+perguntaAtual.pergunta;
 
 
-    }
+}
 
-    else{
 
 
-        if(perguntaAtual.campo){
+else{
 
 
-            await salvarCampoLead(
 
-                telefone,
+if(perguntaAtual.campo){
 
-                perguntaAtual.campo,
 
-                message.body,
+await salvarCampoLead(
 
-                empresa.id
+telefone,
 
-            );
+perguntaAtual.campo,
 
+message.body,
 
-        }
+empresa.id
 
+);
 
 
+}
 
 
-        await registrarResposta(
 
-            telefone,
 
-            message.body,
 
-            empresa.id
+await registrarResposta(
 
-        );
+telefone,
 
+message.body,
 
+empresa.id
 
+);
 
 
 
-        const novaEtapa =
-        etapaAtual + 1;
 
 
 
 
+const novaEtapa =
+etapaAtual + 1;
 
 
-        await atualizarEtapa(
 
-            telefone,
 
-            novaEtapa,
 
-            empresa.id
 
-        );
 
+await atualizarEtapa(
 
+telefone,
 
+novaEtapa,
 
+empresa.id
 
+);
 
 
-        const proxima =
-        await buscarProximaPergunta(
 
-            empresa.id,
 
-            novaEtapa
 
-        );
 
 
 
+const proxima =
+await buscarProximaPergunta(
 
+empresa.id,
 
+novaEtapa
 
-        if(proxima){
+);
 
 
-            resposta =
-            proxima.pergunta;
 
 
-        }
 
-        else{
 
+if(proxima){
 
-            resposta =
-            await processarMensagem(
 
-                client.info.wid.user,
+resposta =
+proxima.pergunta;
 
-                telefone,
 
-                message.body
+}
 
-            );
+else{
 
 
-        }
+resposta =
+await processarMensagem(
 
+client.info.wid.user,
 
-    }
+telefone,
+
+message.body
+
+);
+
+
+}
+
+
+
+}
 
 
 
@@ -625,16 +692,16 @@ if(perguntaAtual){
 else{
 
 
-    resposta =
-    await processarMensagem(
+resposta =
+await processarMensagem(
 
-        client.info.wid.user,
+client.info.wid.user,
 
-        telefone,
+telefone,
 
-        message.body
+message.body
 
-    );
+);
 
 
 }
@@ -661,8 +728,6 @@ resposta =
 
 
 
-
-
 await salvarMensagemBot(
 
 lead.id,
@@ -676,15 +741,11 @@ resposta
 
 
 
-
-
 await message.reply(
 
 resposta
 
 );
-
-
 
 
 
@@ -711,7 +772,6 @@ data:new Date()
 }
 
 );
-
 
 
 
@@ -744,85 +804,72 @@ error
 
 
 
-export function iniciarWhatsApp(){
+export async function iniciarWhatsApp(
+    empresaId:number
+){
+
+    empresaConectandoId = empresaId;
+
+
+    console.log(
+        "Empresa conectando WhatsApp:",
+        empresaId
+    );
 
 
 
-if(iniciando){
+    if(iniciando){
 
+        console.log(
+            "WhatsApp já iniciando..."
+        );
 
-console.log(
-"WhatsApp já iniciando..."
-);
+        return;
 
-
-return;
-
-
-}
+    }
 
 
 
+    iniciando = true;
 
 
 
-iniciando = true;
+    console.log(
+        "Iniciando WhatsApp..."
+    );
 
 
 
+    try{
+
+
+        await client.initialize();
 
 
 
-console.log(
-
-"Iniciando WhatsApp..."
-
-);
+        console.log(
+            "WhatsApp initialize chamado com sucesso"
+        );
 
 
+    }
+
+    catch(error){
 
 
+        console.log(
+            "Erro inicializando WhatsApp:",
+            error
+        );
 
 
-client.initialize()
-
-.then(()=>{
+        iniciando = false;
 
 
-console.log(
-
-"initialize chamado com sucesso"
-
-);
-
-
-})
-
-.catch(err=>{
-
-
-console.log(
-
-"Erro inicializando WhatsApp:",
-
-err
-
-);
-
-
-
-iniciando=false;
-
-
-
-});
+    }
 
 
 }
-
-
-
-
 
 
 
@@ -831,7 +878,7 @@ iniciando=false;
 export function getWhatsAppClient(){
 
 
-return client;
+    return client;
 
 
 }

@@ -4,7 +4,6 @@ import { Server } from "socket.io";
 let io: Server | null = null;
 
 
-
 export function iniciarSocket(
     server: Server
 ){
@@ -15,17 +14,17 @@ export function iniciarSocket(
 
 
 
-
 export function emitirParaEmpresa(
     empresaId:number,
     evento:string,
     dados:any
 ){
 
+
     if(!io){
 
         console.log(
-            "Socket ainda não iniciado"
+            "Socket não iniciado"
         );
 
         return;
@@ -33,25 +32,20 @@ export function emitirParaEmpresa(
     }
 
 
-
     console.log(
-        "Emitindo socket:",
+        "Emitindo:",
         evento,
-        dados
+        "empresa:",
+        empresaId
     );
-
 
 
     io
-    .to(
-        `empresa_${empresaId}`
-    )
+    .to(`empresa_${empresaId}`)
     .emit(
-
         evento,
-
         dados
-
     );
+
 
 }

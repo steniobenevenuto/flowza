@@ -20,7 +20,6 @@ const navigate = useNavigate();
 
 
 
-
 async function entrar(){
 
 
@@ -43,39 +42,34 @@ senha
 
 
 
+
+
 console.log(
-    "RESPOSTA LOGIN:",
-    resposta.data
+"RESPOSTA LOGIN:",
+resposta.data
 );
 
 
 
 
-// salva credenciais
+
+
 
 localStorage.setItem(
-
 "email",
-
 email
-
 );
+
 
 
 localStorage.setItem(
-
 "senha",
-
 senha
-
 );
 
 
 
 
-
-
-if(resposta.data.precisaCriarEmpresa){
 
 
 
@@ -89,12 +83,11 @@ resposta.data.token
 
 
 
-console.log(
-    "TOKEN SALVO LOGIN:",
-    localStorage.getItem("token")
-);
 
 
+
+
+if(resposta.data.precisaCriarEmpresa){
 
 
 
@@ -123,23 +116,8 @@ return;
 
 
 
-localStorage.setItem(
 
-"token",
-
-resposta.data.token
-
-);
-
-
-
-console.log(
-    "TOKEN SALVO DASHBOARD:",
-    localStorage.getItem("token")
-);
-
-
-
+if(resposta.data.empresa){
 
 
 
@@ -148,13 +126,10 @@ localStorage.setItem(
 "empresaId",
 
 String(
-
 resposta.data.empresa.id
-
 )
 
 );
-
 
 
 
@@ -166,6 +141,12 @@ localStorage.setItem(
 resposta.data.empresa.nome
 
 );
+
+
+}
+
+
+
 
 
 
@@ -184,7 +165,24 @@ resposta.data.usuario.nome
 
 
 
+
+console.log(
+
+"EMPRESA ID:",
+
+localStorage.getItem("empresaId")
+
+);
+
+
+
+
+
+
+
+
 navigate("/dashboard");
+
 
 
 
@@ -193,23 +191,29 @@ navigate("/dashboard");
 }catch(error:any){
 
 
+
 console.log(
-    "ERRO LOGIN:",
-    error
+"ERRO LOGIN:",
+error
 );
+
+
 
 
 
 if(error.response?.status === 403){
 
 
+
 setTrialExpirado(true);
+
 
 
 return;
 
 
 }
+
 
 
 
@@ -222,6 +226,7 @@ error.response?.data?.erro ||
 "Email ou senha inválidos"
 
 );
+
 
 
 
@@ -240,6 +245,7 @@ error.response?.data?.erro ||
 
 
 if(trialExpirado){
+
 
 
 return(
@@ -275,6 +281,7 @@ text-center
 
 
 
+
 <h1 className="
 text-3xl
 font-bold
@@ -289,6 +296,7 @@ Seu teste gratuito terminou
 
 
 
+
 <p className="
 text-zinc-400
 mb-8
@@ -298,6 +306,7 @@ Para continuar usando a Flowza,
 escolha um plano.
 
 </p>
+
 
 
 
@@ -333,6 +342,7 @@ Escolher plano
 
 
 );
+
 
 
 }
@@ -377,7 +387,6 @@ p-8
 
 
 
-
 <div className="text-center mb-8">
 
 
@@ -395,7 +404,6 @@ Flowza
 
 
 
-
 <p className="
 text-zinc-400
 mt-2
@@ -408,7 +416,6 @@ Automação inteligente para seu negócio
 
 
 </div>
-
 
 
 
@@ -444,7 +451,6 @@ setEmail(e.target.value)
 }
 
 />
-
 
 
 
@@ -520,10 +526,12 @@ Entrar
 
 
 
+
 <div className="
 mt-6
 text-center
 ">
+
 
 
 
@@ -569,9 +577,7 @@ Criar minha conta gratuitamente
 
 
 
-
 </div>
-
 
 
 

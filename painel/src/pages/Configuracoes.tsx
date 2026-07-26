@@ -3,11 +3,16 @@ import Layout from "../components/Layout";
 import api from "../services/api";
 import toast from "react-hot-toast";
 
+import WhatsAppConnect from "../components/WhatsAppConnect";
+
+
 
 interface Empresa {
 
     nome:string;
+
     segmento:string;
+
     telefoneWhatsapp:string;
 
     logo?:string | null;
@@ -33,12 +38,16 @@ interface Empresa {
 export default function Configuracoes(){
 
 
+
 const [empresa,setEmpresa] =
 useState<Empresa | null>(null);
 
 
+
 const [salvando,setSalvando] =
 useState(false);
+
+
 
 
 
@@ -54,6 +63,7 @@ carregar();
 
 
 
+
 async function carregar(){
 
 
@@ -62,6 +72,7 @@ try{
 
 const resposta =
 await api.get("/configuracao");
+
 
 
 setEmpresa(
@@ -75,16 +86,20 @@ resposta.data
 
 console.log(error);
 
+
+
 toast.error(
 "Erro ao carregar configurações"
 );
 
 
+
+}
+
+
 }
 
 
-
-}
 
 
 
@@ -92,12 +107,17 @@ toast.error(
 
 
 function alterar(
+
 campo:keyof Empresa,
+
 valor:string
+
 ){
 
 
+
 if(!empresa) return;
+
 
 
 setEmpresa({
@@ -109,7 +129,9 @@ setEmpresa({
 });
 
 
+
 }
+
 
 
 
@@ -121,7 +143,10 @@ setEmpresa({
 async function salvar(){
 
 
+
 if(!empresa) return;
+
+
 
 
 try{
@@ -131,16 +156,25 @@ setSalvando(true);
 
 
 
+
 await api.put(
+
 "/configuracao",
+
 empresa
+
 );
+
 
 
 
 toast.success(
+
 "Configurações salvas 🚀"
+
 );
+
+
 
 
 
@@ -148,8 +182,11 @@ toast.success(
 
 
 toast.error(
+
 "Erro ao salvar"
+
 );
+
 
 
 }finally{
@@ -158,11 +195,16 @@ toast.error(
 setSalvando(false);
 
 
+
+}
+
+
+
 }
 
 
 
-}
+
 
 
 
@@ -171,17 +213,25 @@ setSalvando(false);
 if(!empresa){
 
 
+
 return (
+
 
 <Layout>
 
+
 <p>
+
 Carregando configurações...
+
 </p>
+
 
 </Layout>
 
+
 )
+
 
 }
 
@@ -191,12 +241,16 @@ Carregando configurações...
 
 
 
+
+
 return (
+
 
 <Layout>
 
 
 <div className="max-w-5xl">
+
 
 
 <h1 className="
@@ -205,9 +259,13 @@ font-bold
 text-white
 ">
 
+
 ⚙️ Configurações
 
+
 </h1>
+
+
 
 
 <p className="
@@ -216,9 +274,13 @@ mt-2
 mb-8
 ">
 
+
 Configure sua empresa e sua inteligência artificial
 
+
 </p>
+
+
 
 
 
@@ -228,6 +290,20 @@ Configure sua empresa e sua inteligência artificial
 
 
 
+
+
+{/* WHATSAPP */}
+
+
+<WhatsAppConnect />
+
+
+
+
+
+
+
+{/* EMPRESA */}
 
 
 <div className="
@@ -248,7 +324,9 @@ p-6
 
 
 
+
 <input
+
 
 className="
 w-full
@@ -262,24 +340,41 @@ text-white
 outline-none
 focus:border-blue-500
 "
+
 
 placeholder="Nome"
 
+
+
 value={empresa.nome}
 
+
+
 onChange={
-e=>alterar(
+
+e=>
+
+alterar(
+
 "nome",
+
 e.target.value
+
 )
+
 }
+
 
 />
 
 
 
 
+
+
+
 <input
+
 
 className="
 w-full
@@ -293,39 +388,83 @@ text-white
 outline-none
 focus:border-blue-500
 "
+
 
 placeholder="Segmento"
 
+
+
 value={empresa.segmento}
 
+
+
 onChange={
-e=>alterar(
+
+e=>
+
+alterar(
+
 "segmento",
+
 e.target.value
+
 )
+
 }
+
 
 />
 
 
 
 
+
+
+
+
 <input
 
-className="w-full border rounded-xl p-3"
+
+className="
+w-full
+bg-zinc-900
+border
+border-zinc-700
+rounded-xl
+p-3
+mb-3
+text-white
+outline-none
+focus:border-blue-500
+"
+
 
 placeholder="WhatsApp"
 
+
+
 value={empresa.telefoneWhatsapp}
 
+
+
 onChange={
-e=>alterar(
+
+e=>
+
+alterar(
+
 "telefoneWhatsapp",
+
 e.target.value
+
 )
+
 }
 
+
 />
+
+
 
 
 </div>
@@ -333,6 +472,12 @@ e.target.value
 
 
 
+
+
+
+
+
+{/* IA */}
 
 
 
@@ -347,31 +492,58 @@ p-6
 
 
 <h2 className="text-xl font-bold mb-5">
+
 
 🤖 Inteligência Artificial
 
+
 </h2>
+
 
 
 
 
 <textarea
 
-className="w-full border rounded-xl p-3 h-40"
+
+className="
+w-full
+bg-zinc-900
+border
+border-zinc-700
+rounded-xl
+p-3
+h-40
+text-white
+"
+
 
 placeholder="Digite como a IA deve agir..."
 
+
+
 value={
+
 empresa.promptIA || ""
+
 }
+
 
 
 onChange={
-e=>alterar(
+
+e=>
+
+alterar(
+
 "promptIA",
+
 e.target.value
+
 )
+
 }
+
 
 
 />
@@ -382,6 +554,13 @@ e.target.value
 
 
 
+
+
+
+
+
+
+{/* ATENDIMENTO */}
 
 
 
@@ -398,30 +577,58 @@ p-6
 
 <h2 className="text-xl font-bold mb-5">
 
+
 📞 Atendimento
 
+
 </h2>
+
 
 
 
 
 <textarea
 
-className="w-full border rounded-xl p-3 h-32"
+
+className="
+w-full
+bg-zinc-900
+border
+border-zinc-700
+rounded-xl
+p-3
+h-32
+text-white
+"
+
+
 
 placeholder="Mensagem inicial..."
 
+
+
 value={
+
 empresa.mensagemInicial || ""
+
 }
+
 
 
 onChange={
-e=>alterar(
+
+e=>
+
+alterar(
+
 "mensagemInicial",
+
 e.target.value
+
 )
+
 }
+
 
 
 />
@@ -432,6 +639,13 @@ e.target.value
 
 
 
+
+
+
+
+
+
+{/* INFORMAÇÕES */}
 
 
 
@@ -448,13 +662,20 @@ p-6
 
 <h2 className="text-xl font-bold mb-5">
 
+
 🌎 Informações
+
 
 </h2>
 
 
 
+
+
+
+
 <input
+
 
 className="
 w-full
@@ -465,28 +686,48 @@ rounded-xl
 p-3
 mb-3
 text-white
-outline-none
-focus:border-blue-500
 "
+
+
 
 placeholder="Endereço"
 
+
+
 value={
+
 empresa.endereco || ""
+
 }
 
+
+
 onChange={
-e=>alterar(
+
+e=>
+
+alterar(
+
 "endereco",
+
 e.target.value
+
 )
+
 }
+
+
 
 />
 
 
 
+
+
+
+
 <input
+
 
 className="
 w-full
@@ -497,50 +738,98 @@ rounded-xl
 p-3
 mb-3
 text-white
-outline-none
-focus:border-blue-500
 "
+
+
 
 placeholder="Instagram"
 
+
+
 value={
+
 empresa.instagram || ""
+
 }
+
+
 
 onChange={
-e=>alterar(
+
+e=>
+
+alterar(
+
 "instagram",
+
 e.target.value
+
 )
+
 }
 
+
+
 />
+
+
+
 
 
 
 
 <input
 
-className="w-full border rounded-xl p-3"
+
+className="
+w-full
+bg-zinc-900
+border
+border-zinc-700
+rounded-xl
+p-3
+text-white
+"
+
+
 
 placeholder="Site"
 
+
+
 value={
+
 empresa.site || ""
+
 }
+
+
 
 onChange={
-e=>alterar(
+
+e=>
+
+alterar(
+
 "site",
+
 e.target.value
+
 )
+
 }
 
+
+
 />
+
 
 
 
 </div>
+
+
+
 
 
 
@@ -549,9 +838,13 @@ e.target.value
 
 <button
 
+
 onClick={salvar}
 
+
 disabled={salvando}
+
+
 
 className="
 bg-blue-600
@@ -565,17 +858,25 @@ transition
 "
 
 
+
 >
+
+
 
 {
 
 salvando
+
 ?
+
 "Salvando..."
+
 :
+
 "Salvar alterações"
 
 }
+
 
 
 </button>
@@ -583,15 +884,22 @@ salvando
 
 
 
-</div>
 
 
 </div>
+
+
+
+</div>
+
 
 
 </Layout>
 
+
+
 );
+
 
 
 }
