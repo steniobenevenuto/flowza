@@ -342,43 +342,54 @@ client.on(
 "message_create",
 async(message)=>{
 
-    console.log(
-"🔥 EVENTO MESSAGE_CREATE CHEGOU"
+
+console.log(
+"🔥 EVENTO MESSAGE_CREATE CHEGOU",
+{
+from: message.from,
+body: message.body,
+fromMe: message.fromMe
+}
 );
 
 
 try{
 
 
-if(message.from.includes("@g.us"))
+if(message.from.includes("@g.us")){
+
+console.log("IGNOROU GRUPO");
 return;
 
+}
 
-if(message.from==="status@broadcast")
+
+if(message.from==="status@broadcast"){
+
+console.log("IGNOROU STATUS");
 return;
 
+}
 
-if(message.from.includes("@newsletter"))
+
+if(message.from.includes("@newsletter")){
+
+console.log("IGNOROU NEWSLETTER");
 return;
 
+}
 
-if(!message.body?.trim())
+
+if(!message.body?.trim()){
+
+console.log("SEM TEXTO");
 return;
+
+}
+
 
 console.log(
-"Mensagem:",
-message.body,
-"De:",
-message.from,
-"Minha:",
-message.fromMe
-);
-
-
-
-
-console.log(
-"📩 Mensagem recebida:",
+"📩 Mensagem válida:",
 message.body
 );
 
