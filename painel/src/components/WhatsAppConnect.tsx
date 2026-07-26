@@ -5,29 +5,47 @@ import toast from "react-hot-toast";
 
 
 const SOCKET_URL =
-import.meta.env.VITE_API_URL || 
+import.meta.env.VITE_API_URL ||
 "https://flowza-production-9b03.up.railway.app";
+
 
 
 
 export default function WhatsAppConnect(){
 
-    const [qr,setQr] = useState("");
 
-    const [status,setStatus] = useState(
+    const [qr,setQr] =
+    useState("");
+
+
+
+    const [status,setStatus] =
+    useState(
         "disconnected"
     );
 
 
+
+    const [socketAtual,setSocketAtual] =
+    useState<any>(null);
+
+
+
+
     const empresaId =
-Number(localStorage.getItem("empresaId")); 
+    Number(
+        localStorage.getItem("empresaId")
+    );
+
+
 
 
 
     useEffect(()=>{
 
 
-        const socket = io(
+        const socket =
+        io(
             SOCKET_URL,
             {
                 transports:[
@@ -35,6 +53,12 @@ Number(localStorage.getItem("empresaId"));
                 ]
             }
         );
+
+
+
+        setSocketAtual(socket);
+
+
 
 
 
@@ -48,14 +72,21 @@ Number(localStorage.getItem("empresaId"));
                 );
 
 
+
                 socket.emit(
                     "entrar_empresa",
                     empresaId
                 );
 
 
+
             }
         );
+
+
+
+
+
 
 
 
@@ -69,7 +100,11 @@ Number(localStorage.getItem("empresaId"));
                 );
 
 
-                setQr(codigo);
+
+                setQr(
+                    codigo
+                );
+
 
 
                 toast(
@@ -77,8 +112,13 @@ Number(localStorage.getItem("empresaId"));
                 );
 
 
+
             }
         );
+
+
+
+
 
 
 
@@ -87,7 +127,16 @@ Number(localStorage.getItem("empresaId"));
             (data)=>{
 
 
-                if(data.status==="connected"){
+                console.log(
+                    "Status WhatsApp:",
+                    data
+                );
+
+
+
+                if(
+                    data.status === "connected"
+                ){
 
 
                     setStatus(
@@ -98,6 +147,7 @@ Number(localStorage.getItem("empresaId"));
                     setQr("");
 
 
+
                     toast.success(
                         "WhatsApp conectado!"
                     );
@@ -106,8 +156,11 @@ Number(localStorage.getItem("empresaId"));
                 }
 
 
+
             }
         );
+
+
 
 
 
@@ -118,7 +171,7 @@ Number(localStorage.getItem("empresaId"));
             socket.disconnect();
 
 
-        }
+        };
 
 
 
@@ -128,16 +181,38 @@ Number(localStorage.getItem("empresaId"));
 
 
 
+
+
+
     function conectar(){
 
 
-        const socket =
-        io(
-            SOCKET_URL
+        if(!socketAtual){
+
+
+            toast.error(
+                "Socket ainda não conectado"
+            );
+
+
+            return;
+
+        }
+
+
+
+
+
+        console.log(
+            "Solicitando conexão WhatsApp:",
+            empresaId
         );
 
 
-        socket.emit(
+
+
+
+        socketAtual.emit(
 
             "conectar_whatsapp",
 
@@ -146,7 +221,10 @@ Number(localStorage.getItem("empresaId"));
         );
 
 
+
     }
+
+
 
 
 
@@ -154,18 +232,22 @@ Number(localStorage.getItem("empresaId"));
 
 return (
 
-<div className="
+<div
+className="
 bg-white
 rounded-xl
 shadow
 p-6
-">
+"
+>
 
 
-<h2 className="
+<h2
+className="
 text-xl
 font-bold
-">
+"
+>
 
 WhatsApp
 
@@ -173,25 +255,38 @@ WhatsApp
 
 
 
+
+
 {
-status==="connected" ?
+
+status==="connected"
+
+?
 
 (
 
-<p className="
+
+<p
+className="
 text-green-600
 mt-4
-">
+font-semibold
+"
+>
 
 ✅ WhatsApp conectado
 
 </p>
 
+
 )
+
 
 :
 
+
 (
+
 
 <>
 
@@ -207,6 +302,8 @@ px-5
 py-3
 rounded-lg
 mt-4
+hover:bg-zinc-800
+transition
 "
 
 >
@@ -217,20 +314,45 @@ Conectar WhatsApp
 
 
 
+
+
+
+
 {
+
 qr && (
 
-<div className="
-mt-6
-">
 
-<p className="
+<div
+className="
+mt-6
+"
+>
+
+
+<p
+className="
 mb-3
-">
+text-zinc-700
+"
+>
 
 Escaneie no WhatsApp:
 
 </p>
+
+
+
+
+<div
+className="
+bg-white
+p-4
+inline-block
+rounded-xl
+border
+"
+>
 
 
 <QRCode
@@ -244,14 +366,23 @@ size={220}
 
 </div>
 
+
+
+</div>
+
+
 )
+
 
 }
 
 
+
 </>
 
+
 )
+
 
 }
 

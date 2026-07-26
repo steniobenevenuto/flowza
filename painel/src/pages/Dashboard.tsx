@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import Layout from "../components/Layout";
 import api from "../services/api";
+import WhatsAppConnect from "../components/WhatsAppConnect";
 
 
 interface Conversa {
@@ -73,6 +74,7 @@ carregar();
 
 
 },[]);
+
 
 
 
@@ -241,6 +243,20 @@ gap-2
 
 
 
+{/* CONEXÃO WHATSAPP */}
+
+
+<div className="mb-8">
+
+<WhatsAppConnect />
+
+</div>
+
+
+
+
+
+
 
 {/* CARDS */}
 
@@ -292,6 +308,8 @@ icone="✅"
 
 
 
+
+
 <div
 className="
 mt-8
@@ -301,6 +319,7 @@ xl:grid-cols-2
 gap-6
 "
 >
+
 
 
 
@@ -430,7 +449,7 @@ text-zinc-500
 
 new Date(
 lead.data
-).toLocaleDateString()
+).toLocaleDateString("pt-BR")
 
 }
 
@@ -458,6 +477,8 @@ lead.data
 
 
 </div>
+
+
 
 
 
@@ -526,6 +547,7 @@ rounded-full
 
 
 
+
 <span
 className="
 bg-blue-500/20
@@ -541,6 +563,7 @@ rounded-full
 🚀 Sistema funcionando
 
 </span>
+
 
 
 
@@ -598,6 +621,8 @@ rounded-full
 
 
 }
+
+
 
 
 
