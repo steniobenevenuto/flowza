@@ -342,6 +342,10 @@ client.on(
 "message_create",
 async(message)=>{
 
+    console.log(
+"🔥 EVENTO MESSAGE_CREATE CHEGOU"
+);
+
 
 try{
 
@@ -360,6 +364,15 @@ return;
 
 if(!message.body?.trim())
 return;
+
+console.log(
+"Mensagem:",
+message.body,
+"De:",
+message.from,
+"Minha:",
+message.fromMe
+);
 
 
 
