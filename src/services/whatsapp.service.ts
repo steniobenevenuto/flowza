@@ -34,15 +34,11 @@ import {
 } from "./socket.service";
 
 
-
 function normalizarTelefone(message:any){
 
     if(message.from.includes("@c.us")){
 
-        return message.from.replace(
-            "@c.us",
-            ""
-        );
+        return message.from.replace("@c.us","");
 
     }
 
@@ -51,20 +47,19 @@ function normalizarTelefone(message:any){
 }
 
 
-
 let iniciando = false;
 
 
 
 const chromePath =
-process.env.CHROME_PATH ||
+process.env.CHROME_BIN ??
+process.env.CHROME_PATH ??
 "/usr/bin/chromium";
 
 
-
 console.log(
-"Chrome usado:",
-chromePath
+    "Chrome usado:",
+    chromePath
 );
 
 
@@ -103,15 +98,11 @@ const client = new Client({
 
             "--disable-extensions",
 
-            "--disable-background-networking",
-
-            "--disable-default-apps",
-
-            "--disable-sync",
-
             "--no-first-run",
 
-            "--no-zygote"
+            "--no-zygote",
+
+            "--single-process"
 
         ],
 
@@ -121,7 +112,6 @@ const client = new Client({
     }
 
 });
-
 
 
 
