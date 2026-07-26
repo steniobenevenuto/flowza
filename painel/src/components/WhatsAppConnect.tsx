@@ -19,12 +19,10 @@ export default function WhatsAppConnect(){
     useState("");
 
 
-
     const [status,setStatus] =
     useState(
         "disconnected"
     );
-
 
 
     const [socketAtual,setSocketAtual] =
@@ -32,12 +30,10 @@ export default function WhatsAppConnect(){
 
 
 
-
     const empresaId =
     Number(
         localStorage.getItem("empresaId")
     );
-
 
 
 
@@ -64,7 +60,6 @@ export default function WhatsAppConnect(){
 
 
 
-
         socket.on(
             "connect",
             ()=>{
@@ -82,32 +77,10 @@ export default function WhatsAppConnect(){
                 );
 
 
-            }
-        );
-
-
-
-
-
-
-
-        socket.on(
-            "whatsapp_qr",
-            (codigo)=>{
-
-
-                console.log(
-                    "QR recebido"
-                );
-
-
-                setQr(
-                    codigo
-                );
-
-
-                toast(
-                    "Escaneie o QR Code"
+                // pede status atual
+                socket.emit(
+                    "verificar_whatsapp",
+                    empresaId
                 );
 
 
@@ -127,7 +100,7 @@ export default function WhatsAppConnect(){
 
 
                 console.log(
-                    "Status WhatsApp:",
+                    "Status recebido:",
                     data
                 );
 
@@ -147,16 +120,57 @@ export default function WhatsAppConnect(){
 
 
 
-                    toast.success(
-                        "WhatsApp conectado!"
+                }
+
+
+                else{
+
+
+                    setStatus(
+                        "disconnected"
                     );
 
 
                 }
 
 
+
             }
         );
+
+
+
+
+
+
+
+
+
+        socket.on(
+            "whatsapp_qr",
+            (codigo)=>{
+
+
+                console.log(
+                    "QR recebido"
+                );
+
+
+
+                setQr(
+                    codigo
+                );
+
+
+
+                toast(
+                    "Escaneie o QR Code"
+                );
+
+
+            }
+        );
+
 
 
 
@@ -196,17 +210,8 @@ export default function WhatsAppConnect(){
 
             return;
 
+
         }
-
-
-
-
-
-
-        console.log(
-            "Solicitando conexão WhatsApp:",
-            empresaId
-        );
 
 
 
@@ -233,7 +238,9 @@ export default function WhatsAppConnect(){
 
 return (
 
+
 <div
+
 className="
 bg-zinc-800
 border
@@ -243,6 +250,7 @@ shadow-lg
 p-6
 text-white
 "
+
 >
 
 
@@ -260,6 +268,7 @@ mb-2
 
 
 
+
 <p
 className="
 text-zinc-400
@@ -268,10 +277,9 @@ mb-5
 "
 >
 
-Conecte o WhatsApp da sua empresa para iniciar os atendimentos automáticos.
+Conecte o WhatsApp da empresa para iniciar os atendimentos automáticos.
 
 </p>
-
 
 
 
@@ -286,8 +294,8 @@ status==="connected"
 
 (
 
-
 <div
+
 className="
 bg-green-500/10
 border
@@ -295,13 +303,16 @@ border-green-500/30
 rounded-xl
 p-4
 "
+
 >
 
 <p
+
 className="
 text-green-400
 font-semibold
 "
+
 >
 
 ✅ WhatsApp conectado
@@ -311,12 +322,11 @@ font-semibold
 
 </div>
 
-
 )
 
 
-:
 
+:
 
 (
 
@@ -351,13 +361,13 @@ transition
 
 
 
-
 {
 
 qr && (
 
 
 <div
+
 className="
 mt-6
 bg-zinc-900
@@ -366,18 +376,21 @@ border-zinc-700
 rounded-xl
 p-5
 "
+
 >
 
 
 <p
+
 className="
 text-zinc-300
 mb-4
 font-medium
 "
+
 >
 
-Escaneie o QR Code pelo WhatsApp:
+Escaneie o QR Code:
 
 </p>
 
@@ -385,14 +398,15 @@ Escaneie o QR Code pelo WhatsApp:
 
 
 
-
 <div
+
 className="
 bg-white
 p-4
 rounded-xl
 inline-block
 "
+
 >
 
 
@@ -412,18 +426,18 @@ size={220}
 
 
 <p
+
 className="
 text-zinc-500
 text-sm
 mt-4
 "
+
 >
 
-Abra WhatsApp → Dispositivos conectados → Conectar dispositivo
+WhatsApp → Dispositivos conectados → Conectar dispositivo
 
 </p>
-
-
 
 
 
@@ -434,6 +448,8 @@ Abra WhatsApp → Dispositivos conectados → Conectar dispositivo
 
 
 }
+
+
 
 
 
@@ -442,8 +458,8 @@ Abra WhatsApp → Dispositivos conectados → Conectar dispositivo
 
 )
 
-
 }
+
 
 
 
@@ -451,6 +467,7 @@ Abra WhatsApp → Dispositivos conectados → Conectar dispositivo
 
 
 );
+
 
 
 }

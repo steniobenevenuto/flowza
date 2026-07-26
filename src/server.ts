@@ -21,14 +21,25 @@ import configuracaoRoutes from "./routes/configuracao.routes";
 import fluxoRoutes from "./routes/fluxo.routes";
 import planoRoutes from "./routes/plano.routes";
 import pagamentoRoutes from "./routes/pagamento.routes";
+import whatsappRoutes from "./routes/whatsapp.routes";
+
 
 
 // ======================
 // SERVIÇOS
 // ======================
 
-import { iniciarWhatsApp } from "./services/whatsapp.service";
-import { iniciarSocket } from "./services/socket.service";
+import { 
+    iniciarWhatsApp,
+    getWhatsAppClient
+} from "./services/whatsapp.service";
+
+
+import { 
+    iniciarSocket,
+    emitirParaEmpresa
+} from "./services/socket.service";
+
 
 
 // ======================
@@ -65,13 +76,9 @@ credentials:true,
 methods:[
 
 "GET",
-
 "POST",
-
 "PUT",
-
 "PATCH",
-
 "DELETE"
 
 ],
@@ -79,7 +86,6 @@ methods:[
 allowedHeaders:[
 
 "Content-Type",
-
 "Authorization"
 
 ]
@@ -90,10 +96,10 @@ allowedHeaders:[
 
 
 
+
 // ======================
 // MIDDLEWARES
 // ======================
-
 
 app.use(express.json());
 
@@ -105,10 +111,10 @@ extended:true
 
 
 
+
 // ======================
 // TESTE
 // ======================
-
 
 app.get("/",(req,res)=>{
 
@@ -126,10 +132,11 @@ mensagem:"Flowza SaaS funcionando 🚀"
 
 
 
+
+
 // ======================
 // ROTAS API
 // ======================
-
 
 app.use("/auth",authRoutes);
 
@@ -151,12 +158,15 @@ app.use("/planos",planoRoutes);
 
 app.use("/pagamento",pagamentoRoutes);
 
+app.use("/whatsapp",whatsappRoutes);
+
+
+
 
 
 // ======================
 // SOCKET.IO
 // ======================
-
 
 const httpServer =
 createServer(app);
@@ -181,7 +191,6 @@ credentials:true,
 methods:[
 
 "GET",
-
 "POST"
 
 ]
@@ -189,6 +198,7 @@ methods:[
 }
 
 });
+
 
 
 
@@ -210,6 +220,9 @@ socket.id
 
 
 
+
+
+// entra na sala da empresa
 
 socket.on(
 "entrar_empresa",
@@ -235,13 +248,16 @@ console.log(
 );
 
 
-
-
 });
 
 
 
 
+
+
+
+
+// iniciar conexão WhatsApp
 
 socket.on(
 "conectar_whatsapp",
@@ -262,6 +278,95 @@ empresaId
 
 
 });
+
+
+
+
+
+
+
+
+
+// verificar se já está conectado
+
+socket.on(
+"verificar_whatsapp",
+(empresaId)=>{
+
+
+console.log(
+"Verificando WhatsApp empresa:",
+empresaId
+);
+
+
+
+const client =
+getWhatsAppClient();
+
+
+
+
+if(
+client.info
+){
+
+
+console.log(
+"WhatsApp já conectado"
+);
+
+
+
+emitirParaEmpresa(
+
+empresaId,
+
+"whatsapp_status",
+
+{
+
+status:"connected"
+
+}
+
+);
+
+
+
+}
+
+else{
+
+
+console.log(
+"WhatsApp ainda desconectado"
+);
+
+
+
+emitirParaEmpresa(
+
+empresaId,
+
+"whatsapp_status",
+
+{
+
+status:"disconnected"
+
+}
+
+);
+
+
+}
+
+
+
+});
+
+
 
 
 
@@ -289,6 +394,8 @@ socket.id
 }
 
 );
+
+
 
 
 
