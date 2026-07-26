@@ -43,7 +43,6 @@ import {
 
 function normalizarTelefone(message:any){
 
-
     if(message.from.includes("@c.us")){
 
         return message.from.replace("@c.us","");
@@ -65,7 +64,6 @@ let iniciando = false;
 let empresaConectandoId:number | null = null;
 
 
-
 let whatsappStatus =
 "disconnected";
 
@@ -78,6 +76,7 @@ const chromePath =
 process.env.CHROME_BIN ??
 process.env.CHROME_PATH ??
 "/usr/bin/chromium";
+
 
 
 
@@ -95,25 +94,18 @@ console.log(
 
 const client = new Client({
 
-
     authStrategy:new LocalAuth({
-
 
         clientId:"flowza",
 
-
         dataPath:"./.wwebjs_auth"
-
 
     }),
 
 
-
     puppeteer:{
 
-
         headless:true,
-
 
         executablePath:chromePath,
 
@@ -143,12 +135,9 @@ const client = new Client({
 
         timeout:120000
 
-
     }
 
-
 });
-
 
 
 
@@ -170,7 +159,6 @@ message
 
 
 });
-
 
 
 
@@ -216,7 +204,6 @@ qr
 
 
 
-
 client.on(
 "authenticated",
 ()=>{
@@ -228,7 +215,6 @@ console.log(
 
 
 });
-
 
 
 
@@ -254,16 +240,14 @@ console.log(
 
 
 console.log(
-"Número:",
+"Número conectado:",
 client.info.wid.user
 );
 
 
 
 
-
 if(empresaConectandoId){
-
 
 
 emitirParaEmpresa(
@@ -281,13 +265,11 @@ status:"connected"
 );
 
 
-
 }
 
 
 
 });
-
 
 
 
@@ -307,9 +289,7 @@ msg
 );
 
 
-
 });
-
 
 
 
@@ -327,12 +307,10 @@ whatsappStatus =
 "disconnected";
 
 
-
 console.log(
 "WhatsApp desconectado:",
 reason
 );
-
 
 
 
@@ -354,20 +332,11 @@ status:"disconnected"
 );
 
 
-
 }
 
 
 
 });
-
-
-
-
-
-
-
-
 
 client.on(
 "message",
@@ -375,7 +344,6 @@ async(message)=>{
 
 
 try{
-
 
 
 if(message.from.includes("@g.us"))
@@ -396,10 +364,18 @@ return;
 
 
 
+console.log(
+"📩 Mensagem recebida:",
+message.body
+);
+
+
+
+
 
 console.log(
-"Mensagem recebida:",
-message.body
+"📱 INFO WHATSAPP:",
+client.info
 );
 
 
@@ -412,9 +388,36 @@ await message.getContact();
 
 
 
-
 const telefone =
 normalizarTelefone(message);
+
+
+
+
+
+console.log(
+"Telefone cliente:",
+telefone
+);
+
+
+
+
+
+
+
+const numeroWhatsapp =
+client.info.wid.user;
+
+
+
+
+
+
+console.log(
+"Buscando empresa pelo WhatsApp:",
+numeroWhatsapp
+);
 
 
 
@@ -424,9 +427,10 @@ normalizarTelefone(message);
 const empresa =
 await buscarEmpresaPorWhatsapp(
 
-client.info.wid.user
+numeroWhatsapp
 
 );
+
 
 
 
@@ -437,7 +441,7 @@ if(!empresa){
 
 
 console.log(
-"WhatsApp sem empresa configurada"
+"❌ WhatsApp sem empresa configurada"
 );
 
 
@@ -445,6 +449,18 @@ return;
 
 
 }
+
+
+
+
+
+
+
+console.log(
+"Empresa encontrada:",
+empresa.nome,
+empresa.id
+);
 
 
 
@@ -502,8 +518,29 @@ empresa.id
 
 
 
-if(!lead)
+
+if(!lead){
+
+
+console.log(
+"❌ Lead não encontrado depois de salvar"
+);
+
+
 return;
+
+
+}
+
+
+
+
+
+
+console.log(
+"Lead encontrado:",
+lead.id
+);
 
 
 
@@ -520,7 +557,6 @@ lead.id,
 message.body
 
 );
-
 
 
 
@@ -556,10 +592,9 @@ data:new Date()
 
 
 
-
-
 let etapaAtual =
 lead.etapa || 1;
+
 
 
 
@@ -570,6 +605,8 @@ const texto =
 message.body
 .toLowerCase()
 .trim();
+
+
 
 
 
@@ -613,7 +650,6 @@ empresa.id
 );
 
 
-
 etapaAtual = 1;
 
 
@@ -641,6 +677,7 @@ etapaAtual
 
 
 
+
 let resposta = "";
 
 
@@ -650,8 +687,6 @@ let resposta = "";
 
 
 if(perguntaAtual){
-
-
 
 
 
@@ -670,7 +705,11 @@ perguntaAtual.pergunta;
 
 }
 
+
+
 else{
+
+
 
 
 
@@ -748,6 +787,7 @@ novaEtapa
 
 
 
+
 if(proxima){
 
 
@@ -763,7 +803,7 @@ else{
 resposta =
 await processarMensagem(
 
-client.info.wid.user,
+numeroWhatsapp,
 
 telefone,
 
@@ -777,8 +817,8 @@ message.body
 
 
 
-}
 
+}
 
 
 
@@ -790,7 +830,7 @@ else{
 resposta =
 await processarMensagem(
 
-client.info.wid.user,
+numeroWhatsapp,
 
 telefone,
 
@@ -799,8 +839,9 @@ message.body
 );
 
 
-
 }
+
+
 
 
 
@@ -823,6 +864,19 @@ resposta =
 
 
 
+console.log(
+"🤖 Resposta bot:",
+resposta
+);
+
+
+
+
+
+
+
+
+
 await salvarMensagemBot(
 
 lead.id,
@@ -837,11 +891,13 @@ resposta
 
 
 
+
 await message.reply(
 
 resposta
 
 );
+
 
 
 
@@ -881,7 +937,7 @@ catch(error){
 
 console.log(
 
-"Erro WhatsApp:",
+"❌ Erro WhatsApp message:",
 
 error
 
@@ -894,18 +950,9 @@ error
 
 });
 
-
-
-
-
-
-
-
-
 export async function iniciarWhatsApp(
 empresaId:number
 ){
-
 
 
 empresaConectandoId =
@@ -913,16 +960,10 @@ empresaId;
 
 
 
-
-
 console.log(
-
-"Empresa conectando WhatsApp:",
-
+"🏢 Empresa conectando WhatsApp:",
 empresaId
-
 );
-
 
 
 
@@ -932,9 +973,7 @@ if(iniciando){
 
 
 console.log(
-
-"WhatsApp já iniciando..."
-
+"WhatsApp já está iniciando..."
 );
 
 
@@ -947,7 +986,16 @@ return;
 
 
 
+
 iniciando = true;
+
+
+
+
+
+console.log(
+"🚀 Iniciando WhatsApp..."
+);
 
 
 
@@ -957,39 +1005,37 @@ iniciando = true;
 try{
 
 
-
 await client.initialize();
 
 
 
 console.log(
-
-"WhatsApp initialize chamado com sucesso"
-
+"✅ WhatsApp initialize chamado com sucesso"
 );
 
 
 
+
 }
+
 
 catch(error){
 
 
 
 console.log(
-
-"Erro inicializando WhatsApp:",
-
+"❌ Erro inicializando WhatsApp:",
 error
-
 );
 
 
 
-iniciando=false;
+iniciando = false;
+
 
 
 }
+
 
 
 
@@ -1010,7 +1056,6 @@ return client;
 
 
 }
-
 
 
 
