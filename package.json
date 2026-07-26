@@ -5,7 +5,6 @@
   "scripts": {
     "dev": "tsx watch src/server.ts",
     "build": "prisma generate",
-    "postinstall": "prisma generate",
     "start": "tsx src/server.ts"
   },
   "dependencies": {

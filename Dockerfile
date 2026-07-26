@@ -1,6 +1,5 @@
 FROM node:22-bookworm
 
-# Instala Chromium e dependências
 RUN apt-get update && apt-get install -y \
     chromium \
     chromium-driver \
@@ -22,11 +21,9 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
-COPY package*.json ./
-
-RUN npm ci
-
 COPY . .
+
+RUN npm ci --ignore-scripts
 
 RUN npx prisma generate
 
@@ -34,4 +31,4 @@ ENV CHROME_BIN=/usr/bin/chromium
 
 EXPOSE 8080
 
-CMD ["npm", "run", "start"]
+CMD ["npm","run","start"]
