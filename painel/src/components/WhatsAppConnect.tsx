@@ -11,6 +11,7 @@ import.meta.env.VITE_API_URL ||
 
 
 
+
 export default function WhatsAppConnect(){
 
 
@@ -41,6 +42,7 @@ export default function WhatsAppConnect(){
 
 
 
+
     useEffect(()=>{
 
 
@@ -57,6 +59,7 @@ export default function WhatsAppConnect(){
 
 
         setSocketAtual(socket);
+
 
 
 
@@ -79,10 +82,8 @@ export default function WhatsAppConnect(){
                 );
 
 
-
             }
         );
-
 
 
 
@@ -100,11 +101,9 @@ export default function WhatsAppConnect(){
                 );
 
 
-
                 setQr(
                     codigo
                 );
-
 
 
                 toast(
@@ -112,9 +111,9 @@ export default function WhatsAppConnect(){
                 );
 
 
-
             }
         );
+
 
 
 
@@ -156,7 +155,6 @@ export default function WhatsAppConnect(){
                 }
 
 
-
             }
         );
 
@@ -184,6 +182,7 @@ export default function WhatsAppConnect(){
 
 
 
+
     function conectar(){
 
 
@@ -198,6 +197,7 @@ export default function WhatsAppConnect(){
             return;
 
         }
+
 
 
 
@@ -221,8 +221,9 @@ export default function WhatsAppConnect(){
         );
 
 
-
     }
+
+
 
 
 
@@ -234,10 +235,13 @@ return (
 
 <div
 className="
-bg-white
-rounded-xl
-shadow
+bg-zinc-800
+border
+border-zinc-700
+rounded-2xl
+shadow-lg
 p-6
+text-white
 "
 >
 
@@ -246,12 +250,29 @@ p-6
 className="
 text-xl
 font-bold
+mb-2
 "
 >
 
-WhatsApp
+📱 WhatsApp
 
 </h2>
+
+
+
+<p
+className="
+text-zinc-400
+text-sm
+mb-5
+"
+>
+
+Conecte o WhatsApp da sua empresa para iniciar os atendimentos automáticos.
+
+</p>
+
+
 
 
 
@@ -266,10 +287,19 @@ status==="connected"
 (
 
 
+<div
+className="
+bg-green-500/10
+border
+border-green-500/30
+rounded-xl
+p-4
+"
+>
+
 <p
 className="
-text-green-600
-mt-4
+text-green-400
 font-semibold
 "
 >
@@ -277,6 +307,9 @@ font-semibold
 ✅ WhatsApp conectado
 
 </p>
+
+
+</div>
 
 
 )
@@ -296,21 +329,22 @@ font-semibold
 onClick={conectar}
 
 className="
-bg-black
+bg-blue-600
+hover:bg-blue-700
 text-white
 px-5
 py-3
-rounded-lg
-mt-4
-hover:bg-zinc-800
+rounded-xl
+font-semibold
 transition
 "
 
 >
 
-Conectar WhatsApp
+🔗 Conectar WhatsApp
 
 </button>
+
 
 
 
@@ -326,20 +360,28 @@ qr && (
 <div
 className="
 mt-6
+bg-zinc-900
+border
+border-zinc-700
+rounded-xl
+p-5
 "
 >
 
 
 <p
 className="
-mb-3
-text-zinc-700
+text-zinc-300
+mb-4
+font-medium
 "
 >
 
-Escaneie no WhatsApp:
+Escaneie o QR Code pelo WhatsApp:
 
 </p>
+
+
 
 
 
@@ -348,9 +390,8 @@ Escaneie no WhatsApp:
 className="
 bg-white
 p-4
-inline-block
 rounded-xl
-border
+inline-block
 "
 >
 
@@ -365,6 +406,24 @@ size={220}
 
 
 </div>
+
+
+
+
+
+<p
+className="
+text-zinc-500
+text-sm
+mt-4
+"
+>
+
+Abra WhatsApp → Dispositivos conectados → Conectar dispositivo
+
+</p>
+
+
 
 
 
