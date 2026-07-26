@@ -339,7 +339,7 @@ status:"disconnected"
 });
 
 client.on(
-"message",
+"message_create",
 async(message)=>{
 
 
